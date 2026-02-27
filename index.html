@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DARLN TACTICAL SIM v5.0</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+:root{
+  --bg0:#020912;--bg1:#06101e;--bg2:#0a1628;--bg3:#0f1f38;--bg4:#14253f;
+  --border:rgba(0,180,255,.1);--border2:rgba(0,180,255,.2);--border3:rgba(0,180,255,.35);
+  --c1:#00b4ff;--c2:#00ffaa;--c3:#ff3355;--c4:#ff9900;--c5:#c844ff;--c6:#ffd700;--c7:#ff6688;
+  --gray:#253a56;--light:#5a88a8;--white:#cce8ff;
+  --mono:'Share Tech Mono',monospace;--orb:'Orbitron',sans-serif;--raj:'Rajdhani',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg0);color:var(--white);font-family:var(--raj);}
+body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.03) 3px,rgba(0,0,0,.03) 4px);}
+
+/* ── HDR ── */
+#hdr{height:52px;background:linear-gradient(90deg,var(--bg1),#060e1a);border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;position:relative;}
+.hlogo{font-family:var(--orb);font-size:1rem;font-weight:900;letter-spacing:5px;}
+.hlogo em{color:var(--c1);font-style:normal;}
+.hlogosub{font-family:var(--mono);font-size:.44rem;color:var(--gray);letter-spacing:2px;margin-top:2px;}
+.hpills{display:flex;gap:6px;align-items:center;}
+.hp{font-family:var(--mono);font-size:.5rem;letter-spacing:1.5px;padding:3px 8px;
+  border-radius:2px;display:flex;align-items:center;gap:4px;}
+.hp-r{background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.3);color:var(--c3);}
+.hp-g{background:rgba(0,255,170,.07);border:1px solid rgba(0,255,170,.22);color:var(--c2);}
+.hp-b{background:rgba(0,180,255,.09);border:1px solid rgba(0,180,255,.22);color:var(--c1);animation:pb 2.5s infinite;}
+.hp-y{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.22);color:var(--c6);}
+.hp-o{background:rgba(255,153,0,.07);border:1px solid rgba(255,153,0,.22);color:var(--c4);}
+@keyframes pb{0%,100%{opacity:1}50%{opacity:.45}}
+.hd{width:6px;height:6px;border-radius:50%;animation:pb 1.3s infinite;}
+.hd-r{background:var(--c3);}.hd-g{background:var(--c2);}.hd-b{background:var(--c1);}.hd-y{background:var(--c6);}
+#hclk{font-family:var(--mono);font-size:.58rem;color:var(--gray);min-width:110px;text-align:right;}
+
+/* ── TABS ── */
+#tbar{height:38px;background:var(--bg1);border-bottom:2px solid var(--border);display:flex;z-index:50;position:relative;}
+.tb{font-family:var(--orb);font-size:.5rem;font-weight:600;letter-spacing:1px;
+  padding:0 14px;cursor:pointer;border:none;background:transparent;color:var(--gray);
+  text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-2px;
+  transition:all .18s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.tb:hover{color:var(--light);background:rgba(0,180,255,.04);}
+.tb.on{color:var(--c1);border-bottom-color:var(--c1);background:rgba(0,180,255,.06);}
+
+/* ── APP ── */
+#app{height:calc(100vh - 90px);display:flex;flex-direction:column;}
+.pnl{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.pnl.on{display:flex;}
+
+/* ── CFG BAR ── */
+.cfgbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px 12px;
+  background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;}
+.ci{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.56rem;color:var(--light);}
+.ci label{color:var(--gray);letter-spacing:.8px;white-space:nowrap;font-size:.52rem;}
+.ci input[type=range]{-webkit-appearance:none;width:62px;height:2px;background:var(--bg3);outline:none;cursor:pointer;}
+.ci input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--c1);cursor:pointer;box-shadow:0 0 6px var(--c1);}
+.ci span{color:var(--c1);min-width:30px;font-size:.58rem;}
+.csep{width:1px;height:18px;background:var(--border);flex-shrink:0;}
+.cb{font-family:var(--mono);font-size:.54rem;letter-spacing:1px;padding:5px 11px;
+  border:none;cursor:pointer;border-radius:2px;transition:all .15s;white-space:nowrap;position:relative;overflow:hidden;}
+.cb::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.08);opacity:0;transition:.15s;}
+.cb:hover::after{opacity:1;}
+.cb:active{transform:scale(.95);}
+.cbp{background:var(--c1);color:var(--bg0);font-weight:700;}
+.cbd{background:rgba(255,51,85,.12);color:var(--c3);border:1px solid rgba(255,51,85,.28);}
+.cbw{background:rgba(255,153,0,.12);color:var(--c4);border:1px solid rgba(255,153,0,.28);}
+.cbg{background:rgba(0,255,170,.09);color:var(--c2);border:1px solid rgba(0,255,170,.24);}
+.cbn{background:rgba(200,220,255,.04);color:var(--light);border:1px solid rgba(200,220,255,.1);}
+
+/* ── P1 LAYOUT ── */
+#p1b{flex:1;display:grid;grid-template-columns:1fr 300px;grid-template-rows:1fr 180px;overflow:hidden;}
+#p1m{grid-row:1/2;grid-column:1/2;position:relative;overflow:hidden;}
+#p1s{grid-row:1/3;grid-column:2/3;background:var(--bg1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+#p1c{grid-row:2/3;grid-column:1/2;background:var(--bg2);border-top:1px solid var(--border);display:flex;}
+
+/* ── P2 LAYOUT ── */
+#p2b{flex:1;display:grid;grid-template-columns:1fr 300px;grid-template-rows:1fr 160px;overflow:hidden;}
+#p2m{grid-row:1/2;grid-column:1/2;position:relative;overflow:hidden;}
+#p2s{grid-row:1/2;grid-column:2/3;background:var(--bg1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+#p2t{grid-row:2/3;grid-column:1/3;background:var(--bg2);border-top:1px solid var(--border);position:relative;}
+
+/* ── P3 LAYOUT ── */
+#p3b{flex:1;display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden;}
+.tc{position:relative;overflow:hidden;border-right:1px solid var(--border);}
+.tc:last-child{border-right:none;}
+.tclbl{position:absolute;top:8px;left:10px;font-family:var(--orb);font-size:.58rem;color:var(--c1);letter-spacing:2px;z-index:10;}
+.tcinfo{position:absolute;bottom:0;left:0;right:0;background:rgba(6,16,30,.96);
+  border-top:1px solid var(--border);padding:7px 10px;z-index:10;}
+.tcrow{display:flex;flex-wrap:wrap;gap:3px 12px;}
+.tck{font-family:var(--mono);font-size:.53rem;color:var(--gray);}
+.tcv{color:var(--c1);font-family:var(--mono);font-size:.53rem;}
+
+/* ── P4 COMM LAYOUT ── */
+#p4b{flex:1;overflow:hidden;display:grid;grid-template-columns:1fr 340px;grid-template-rows:1fr;background:var(--bg0);}
+#p4main{overflow-y:auto;padding:16px 20px;}
+#p4main::-webkit-scrollbar{width:4px;}
+#p4main::-webkit-scrollbar-thumb{background:var(--gray);}
+#p4side{border-left:1px solid var(--border);background:var(--bg1);overflow-y:auto;}
+#p4side::-webkit-scrollbar{width:4px;}
+#p4side::-webkit-scrollbar-thumb{background:var(--gray);}
+
+/* ── P5 TECH SPECS ── */
+#p5b{flex:1;overflow-y:auto;padding:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start;}
+#p5b::-webkit-scrollbar{width:4px;}
+#p5b::-webkit-scrollbar-thumb{background:var(--gray);}
+.spcard{background:var(--bg2);border:1px solid var(--border);padding:12px;border-radius:2px;}
+.spbar{height:2px;border-radius:1px;margin-bottom:9px;}
+.sptitle{font-family:var(--orb);font-size:.6rem;color:var(--c1);letter-spacing:2px;margin-bottom:7px;}
+.sprow{display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:3px;padding-bottom:3px;border-bottom:1px solid rgba(255,255,255,.03);}
+.spk{font-family:var(--mono);font-size:.54rem;color:var(--gray);}
+.spv{font-family:var(--mono);font-size:.58rem;}
+.spv.hi{color:var(--c2);}
+.algo-card{background:var(--bg2);border:1px solid var(--border);padding:12px;border-radius:2px;grid-column:1/-1;}
+.algo-t{font-family:var(--orb);font-size:.6rem;color:var(--c4);letter-spacing:2px;margin-bottom:8px;}
+.algo-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.algo-s{display:flex;gap:8px;}
+.algo-n{font-family:var(--mono);font-size:.6rem;color:var(--c1);min-width:18px;font-weight:700;}
+.algo-tx{font-family:var(--mono);font-size:.55rem;color:var(--light);line-height:1.5;}
+.algo-code{font-family:var(--mono);font-size:.55rem;color:var(--c2);
+  background:rgba(0,255,170,.05);border:1px solid rgba(0,255,170,.15);
+  padding:7px 10px;border-radius:2px;margin-top:7px;white-space:pre;line-height:1.6;grid-column:1/-1;}
+
+/* ── SIDEBAR COMMONS ── */
+.sbh{padding:7px 11px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.sbt{font-family:var(--mono);font-size:.5rem;letter-spacing:2.5px;color:var(--gray);text-transform:uppercase;}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:7px 9px;border-bottom:1px solid var(--border);}
+.mc{background:var(--bg3);padding:6px 8px;border-radius:2px;cursor:default;}
+.mcb{height:2px;border-radius:1px;margin-bottom:4px;}
+.mv{font-family:var(--mono);font-size:.9rem;font-weight:700;}
+.ml{font-size:.48rem;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
+.nlist{flex:1;overflow-y:auto;padding:5px 8px;}
+.nlist::-webkit-scrollbar{width:3px;}
+.nlist::-webkit-scrollbar-thumb{background:var(--gray);}
+.nr{display:flex;align-items:center;gap:6px;padding:5px 6px;margin-bottom:3px;
+  border-left:3px solid transparent;background:rgba(255,255,255,.02);
+  border-radius:0 3px 3px 0;transition:all .3s;cursor:default;}
+.nr:hover{background:rgba(255,255,255,.04);}
+.nr.ac{border-left-color:var(--c2);}
+.nr.cr{border-left-color:var(--c3);background:rgba(255,51,85,.05);animation:crfl 1s infinite;}
+.nr.of{border-left-color:var(--gray);opacity:.35;}
+.nr.an{border-left-color:var(--c4);}
+@keyframes crfl{0%,100%{background:rgba(255,51,85,.05)}50%{background:rgba(255,51,85,.13)}}
+.nid{font-family:var(--mono);font-size:.54rem;color:var(--c1);min-width:24px;}
+.ni{flex:1;min-width:0;}
+.nn{font-family:var(--orb);font-size:.58rem;font-weight:700;white-space:nowrap;}
+.nd{font-family:var(--mono);font-size:.5rem;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nrtt{font-family:var(--mono);font-size:.53rem;text-align:right;white-space:nowrap;}
+.lsec{border-top:1px solid var(--border);flex-shrink:0;}
+.ll-wrap{padding:4px 8px;max-height:88px;overflow-y:auto;}
+.ll-wrap::-webkit-scrollbar{width:3px;}
+.ll-wrap::-webkit-scrollbar-thumb{background:var(--gray);}
+.ll{font-family:var(--mono);font-size:.52rem;color:var(--gray);padding:1.5px 0;
+  border-bottom:1px solid rgba(255,255,255,.02);}
+.ll.e{color:var(--c3);}.ll.w{color:var(--c4);}.ll.i{color:var(--c1);}.ll.s{color:var(--c2);}
+.evlog{flex:1;overflow-y:auto;padding:6px 9px;}
+.evlog::-webkit-scrollbar{width:3px;}
+.evlog::-webkit-scrollbar-thumb{background:var(--gray);}
+.evrow{padding:5px 8px;margin-bottom:3px;border-radius:2px;border-left:3px solid var(--c4);}
+.evrow.cr{border-left-color:var(--c3);background:rgba(255,51,85,.06);}
+.evrow.hl{border-left-color:var(--c2);background:rgba(0,255,170,.04);}
+.evrow.if{border-left-color:var(--c1);background:rgba(0,180,255,.04);}
+.evrow.dr{border-left-color:var(--c6);background:rgba(255,215,0,.04);}
+.evn{font-family:var(--orb);font-size:.56rem;font-weight:700;}
+.evd{font-family:var(--mono);font-size:.52rem;color:var(--gray);margin-top:1px;line-height:1.4;}
+
+/* charts */
+.cwrap{flex:1;position:relative;}
+.clbl{position:absolute;top:5px;left:9px;font-family:var(--mono);font-size:.5rem;color:var(--gray);letter-spacing:1.5px;}
+
+/* tooltip */
+#tip{position:fixed;pointer-events:none;z-index:600;display:none;
+  background:rgba(2,7,18,.97);border:1px solid rgba(0,180,255,.4);padding:10px 14px;border-radius:3px;
+  font-family:var(--mono);font-size:.55rem;color:var(--light);white-space:nowrap;
+  box-shadow:0 0 20px rgba(0,180,255,.15);}
+.tth{color:var(--c1);font-size:.62rem;font-weight:700;margin-bottom:5px;font-family:var(--orb);}
+.ttr{display:flex;justify-content:space-between;gap:18px;margin-bottom:2px;}
+.ttk{color:var(--gray);}.ttv{color:var(--white);}
+.ttdiv{height:1px;background:var(--border);margin:5px 0;}
+.ttbig{font-size:.75rem;color:var(--c3);font-weight:700;text-align:center;padding:2px 0;}
+
+/* zoom */
+#zov{position:fixed;inset:0;z-index:400;display:none;background:rgba(2,9,18,.97);
+  cursor:zoom-out;align-items:center;justify-content:center;}
+#zov.on{display:flex;}
+#zc{border:1px solid var(--border2);}
+canvas{display:block;width:100%;height:100%;}
+
+/* ─── COMM TAB ─── */
+.comm-section{margin-bottom:20px;}
+.comm-title{font-family:var(--orb);font-size:.72rem;color:var(--c1);letter-spacing:3px;
+  margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:8px;}
+.comm-title .ct-icon{font-size:.9rem;}
+
+/* Flow diagram */
+.flow-wrap{display:flex;flex-direction:column;gap:0;align-items:stretch;}
+.flow-row{display:flex;align-items:center;gap:0;}
+.flow-box{background:var(--bg2);border:1px solid var(--border2);border-radius:3px;
+  padding:10px 14px;font-family:var(--mono);font-size:.58rem;text-align:center;position:relative;
+  min-width:130px;flex-shrink:0;}
+.flow-box.critical{border-color:rgba(255,51,85,.4);background:rgba(255,51,85,.06);}
+.flow-box.edge{border-color:rgba(0,180,255,.4);background:rgba(0,180,255,.06);}
+.flow-box.relay{border-color:rgba(200,68,255,.35);background:rgba(200,68,255,.05);}
+.flow-box.output{border-color:rgba(0,255,170,.35);background:rgba(0,255,170,.05);}
+.flow-box.sensor{border-color:rgba(255,215,0,.35);background:rgba(255,215,0,.05);}
+.flow-lbl{font-family:var(--orb);font-size:.52rem;color:var(--c1);letter-spacing:1.5px;margin-bottom:3px;}
+.flow-sub{font-family:var(--mono);font-size:.5rem;color:var(--gray);line-height:1.4;}
+.flow-arrow{width:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.flow-arrow::after{content:'';display:block;height:1px;width:24px;background:var(--c1);margin:0 auto;}
+.flow-arrow::before{content:'▶';font-size:.45rem;color:var(--c1);position:absolute;right:6px;}
+.flow-arrow.down{width:100%;height:32px;flex-direction:column;}
+.flow-arrow.down::after{height:18px;width:1px;background:var(--c1);}
+.flow-arrow.down::before{content:'▼';position:static;font-size:.45rem;}
+.flow-branching{display:flex;gap:8px;align-items:flex-start;}
+.flow-branch{display:flex;flex-direction:column;align-items:center;flex:1;}
+
+/* Priority levels */
+.prio-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px;}
+.prio-card{background:var(--bg2);border:1px solid var(--border);border-radius:2px;
+  padding:8px 6px;text-align:center;position:relative;overflow:hidden;}
+.prio-card.active-p{box-shadow:0 0 10px currentColor;}
+.prio-n{font-family:var(--orb);font-size:1.1rem;font-weight:900;}
+.prio-lbl{font-family:var(--mono);font-size:.48rem;color:var(--gray);margin-top:2px;letter-spacing:.5px;}
+.prio-desc{font-family:var(--mono);font-size:.5rem;margin-top:4px;line-height:1.3;}
+.prio-bar{position:absolute;bottom:0;left:0;right:0;height:2px;}
+
+/* distance radar */
+#distRadar{position:relative;background:var(--bg2);border:1px solid var(--border);
+  border-radius:3px;overflow:hidden;cursor:pointer;}
+#distRadar canvas{display:block;}
+.radar-legend{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:8px 10px;
+  border-top:1px solid var(--border);}
+.rl-item{display:flex;align-items:center;gap:6px;}
+.rl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.rl-txt{font-family:var(--mono);font-size:.5rem;color:var(--gray);}
+
+/* packet anim */
+.pkt-flow{background:var(--bg2);border:1px solid var(--border);border-radius:3px;position:relative;overflow:hidden;height:90px;}
+#pktCanvas{width:100%;height:100%;}
+
+/* comm sidebar */
+.cs-section{border-bottom:1px solid var(--border);padding:10px;}
+.cs-title{font-family:var(--orb);font-size:.52rem;color:var(--c4);letter-spacing:2px;margin-bottom:8px;}
+.cs-member{display:flex;align-items:center;gap:8px;padding:5px 6px;margin-bottom:3px;
+  background:rgba(255,255,255,.02);border-radius:2px;border-left:3px solid transparent;
+  transition:all .25s;cursor:default;}
+.cs-member:hover{background:rgba(255,255,255,.04);}
+.cs-member.ok{border-left-color:var(--c2);}
+.cs-member.warn{border-left-color:var(--c4);}
+.cs-member.danger{border-left-color:var(--c3);background:rgba(255,51,85,.05);animation:crfl 1.2s infinite;}
+.cs-member.offline{border-left-color:var(--gray);opacity:.4;}
+.cs-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--orb);font-size:.55rem;font-weight:700;flex-shrink:0;border:2px solid currentColor;}
+.cs-info{flex:1;min-width:0;}
+.cs-name{font-family:var(--orb);font-size:.58rem;font-weight:700;}
+.cs-vitals{display:flex;gap:6px;margin-top:2px;flex-wrap:wrap;}
+.cs-vital{font-family:var(--mono);font-size:.48rem;padding:1px 4px;border-radius:2px;
+  background:rgba(255,255,255,.05);}
+.cs-dist{font-family:var(--mono);font-size:.56rem;text-align:right;white-space:nowrap;}
+.cs-dist-val{font-size:.7rem;font-weight:700;}
+.cs-dist-lbl{font-size:.44rem;color:var(--gray);display:block;}
+
+/* Heartbeat mini chart */
+.hb-mini{display:flex;align-items:flex-end;gap:1px;height:16px;margin-top:2px;}
+.hb-bar{width:3px;border-radius:1px;min-height:2px;transition:height .2s;}
+
+/* status badge */
+.sbadge{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:.46rem;
+  padding:2px 6px;border-radius:10px;letter-spacing:.5px;}
+.sbadge.ok{background:rgba(0,255,170,.1);color:var(--c2);border:1px solid rgba(0,255,170,.2);}
+.sbadge.warn{background:rgba(255,153,0,.1);color:var(--c4);border:1px solid rgba(255,153,0,.2);}
+.sbadge.danger{background:rgba(255,51,85,.1);color:var(--c3);border:1px solid rgba(255,51,85,.2);animation:pb 1s infinite;}
+.sbadge.offline{background:rgba(37,58,86,.3);color:var(--gray);border:1px solid rgba(37,58,86,.5);}
+
+/* blockscheme */
+.blockscheme{background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  padding:14px;position:relative;overflow:hidden;}
+.bs-canvas-wrap{width:100%;height:220px;position:relative;}
+
+/* injury overlay */
+.injury-panel{background:rgba(255,51,85,.07);border:1px solid rgba(255,51,85,.25);
+  border-radius:3px;padding:10px 12px;margin-top:8px;}
+.ip-title{font-family:var(--orb);font-size:.56rem;color:var(--c3);letter-spacing:2px;
+  margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.ip-row{display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:5px;padding-bottom:5px;border-bottom:1px solid rgba(255,51,85,.1);}
+.ip-k{font-family:var(--mono);font-size:.52rem;color:var(--gray);}
+.ip-v{font-family:var(--mono);font-size:.56rem;color:var(--c3);}
+.ip-bar-wrap{width:80px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.ip-bar{height:100%;border-radius:3px;transition:width .5s;}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div id="hdr">
+  <div>
+    <div class="hlogo">DAR<em>LN</em> <span style="font-size:.45rem;color:var(--gray);letter-spacing:2px;font-family:var(--mono)">TACTICAL SIM v5.0</span></div>
+    <div class="hlogosub">DISTRIBUTED AUTONOMOUS RELATIVE LIFE-SAVING NETWORK · MILITARY-GRADE SIMULATION ENGINE</div>
+  </div>
+  <div class="hpills">
+    <div class="hp hp-r"><span class="hd hd-r"></span>GPS DENIED</div>
+    <div class="hp hp-g"><span class="hd hd-g"></span>MESH ACTIVE</div>
+    <div class="hp hp-b"><span class="hd hd-b"></span>AES-128</div>
+    <div class="hp hp-y"><span class="hd hd-y"></span>UWB ToF</div>
+    <div class="hp hp-o"><span class="hd" style="background:var(--c4)"></span><span id="hgrpst">ГРУПА: НОРМА</span></div>
+    <div id="hclk">00:00:00.000</div>
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div id="tbar">
+  <button class="tb on" onclick="sw(0)">📡 СИГНАЛИ</button>
+  <button class="tb" onclick="sw(1)">⚡ СЦЕНАРІЙ</button>
+  <button class="tb" onclick="sw(2)">🗺 ТОПОЛОГІЇ</button>
+  <button class="tb" onclick="sw(3)">📻 ЗБРОЯ ЗВ'ЯЗКУ</button>
+  <button class="tb" onclick="sw(4)">🔧 ТЕХНІЧНИЙ ОПИС</button>
+</div>
+
+<div id="app">
+
+<!-- ══════════ P1 ══════════ -->
+<div class="pnl on" id="p1">
+<div class="cfgbar">
+  <div class="ci"><label>ВУЗЛИ</label><input type="range" id="cn" min="3" max="10" value="7" oninput="uc()"><span id="lcn">7</span></div>
+  <div class="csep"></div>
+  <div class="ci"><label>ШВИДК</label><input type="range" id="csp" min="0" max="20" value="5" oninput="uc()"><span id="lcsp">0.5м/с</span></div>
+  <div class="csep"></div>
+  <div class="ci"><label>ToF ШУМ</label><input type="range" id="cns" min="1" max="5" value="2" oninput="uc()"><span id="lcns">±0.2м</span></div>
+  <div class="csep"></div>
+  <div class="ci"><label>ЧАСТОТА</label><input type="range" id="cfr" min="1" max="10" value="4" oninput="uc()"><span id="lcfr">4Гц</span></div>
+  <div class="csep"></div>
+  <div class="ci"><label>HOPS</label><input type="range" id="chp" min="1" max="3" value="2" oninput="uc()"><span id="lchp">2</span></div>
+  <div class="csep"></div>
+  <button class="cb cbp" onclick="p1Init()">⟳ СКИНУТИ</button>
+  <button class="cb cbd" onclick="p1Kill()">✕ KILL</button>
+  <button class="cb cbw" onclick="p1Event()">⚡ ПОРАНЕННЯ</button>
+  <button class="cb cbg" onclick="p1Heal()">↺ HEAL</button>
+  <button class="cb cbn" id="ppb" onclick="p1Pause()">⏸ ПАУЗА</button>
+  <button class="cb cbn" onclick="zoomOpen('c1')">🔍 ZOOM</button>
+</div>
+<div id="p1b">
+  <div id="p1m"><canvas id="c1"></canvas></div>
+  <div id="p1s">
+    <div class="sbh"><div class="sbt">Стан Системи</div></div>
+    <div class="mg">
+      <div class="mc"><div class="mcb" style="background:var(--c1)"></div><div class="mv" id="ma" style="color:var(--c1)">7</div><div class="ml">АКТИВНІ</div></div>
+      <div class="mc"><div class="mcb" style="background:var(--c3)"></div><div class="mv" id="mo" style="color:var(--c3)">0</div><div class="ml">OFFLINE</div></div>
+      <div class="mc"><div class="mcb" style="background:var(--c2)"></div><div class="mv" id="ml" style="color:var(--c2)">—</div><div class="ml">ЗВ'ЯЗКИ</div></div>
+      <div class="mc"><div class="mcb" style="background:var(--c4)"></div><div class="mv" id="mr" style="color:var(--c4)">—</div><div class="ml">AVG RTT</div></div>
+      <div class="mc"><div class="mcb" style="background:var(--c5)"></div><div class="mv" id="mk" style="color:var(--c5)">—</div><div class="ml">РАДІУС</div></div>
+      <div class="mc"><div class="mcb" style="background:var(--c6)"></div><div class="mv" id="mp" style="color:var(--c6)">0</div><div class="ml">ПАКЕТИ</div></div>
+    </div>
+    <div class="sbh"><div class="sbt">Вузли · Дистанція · RTT</div></div>
+    <div class="nlist" id="nl1"></div>
+    <div class="lsec">
+      <div class="sbh"><div class="sbt">Системний журнал</div></div>
+      <div class="ll-wrap" id="lg1"></div>
+    </div>
+  </div>
+  <div id="p1c">
+    <div class="cwrap"><canvas id="crtt"></canvas><div class="clbl">RTT (мс) · ToF вимірювання</div></div>
+    <div class="cwrap"><canvas id="cfrq"></canvas><div class="clbl">FREQ HOPPING (ГГц)</div></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ P2 ══════════ -->
+<div class="pnl" id="p2">
+<div class="cfgbar">
+  <button class="cb cbp" onclick="p2Start()">▶ ЗАПУСК</button>
+  <button class="cb cbd" onclick="p2Shell()">💥 СНАРЯД</button>
+  <button class="cb cbw" onclick="p2Door()">🚪 ДВЕРІ</button>
+  <button class="cb cbg" onclick="p2Heal()">↺ SELF-HEAL</button>
+  <button class="cb cbn" onclick="p2Reset()">⟳ СКИНУТИ</button>
+  <div class="csep"></div>
+  <div class="ci"><label>ВУЗЛИ</label><input type="range" id="t2n" min="4" max="9" value="6" oninput="t2uc()"><span id="t2ln">6</span></div>
+  <div class="ci"><label>ШУМ</label><input type="range" id="t2ns" min="1" max="5" value="2" oninput="t2uc()"><span id="t2lns">±0.2м</span></div>
+  <div class="csep"></div>
+  <button class="cb cbn" onclick="zoomOpen('c2')">🔍 ZOOM</button>
+</div>
+<div id="p2b">
+  <div id="p2m"><canvas id="c2"></canvas></div>
+  <div id="p2s">
+    <div class="sbh"><div class="sbt">Критичні події</div></div>
+    <div class="evlog" id="evl"></div>
+    <div class="lsec">
+      <div class="sbh"><div class="sbt">Технічний лог</div></div>
+      <div class="ll-wrap" id="lg2"></div>
+    </div>
+  </div>
+  <div id="p2t"><canvas id="ctl"></canvas><div class="clbl">ТАЙМЛАЙН ПОДІЙ (мс від події)</div></div>
+</div>
+</div>
+
+<!-- ══════════ P3 TOPOLOGIES ══════════ -->
+<div class="pnl" id="p3">
+<div class="cfgbar">
+  <span style="font-family:var(--orb);font-size:.58rem;color:var(--c1);letter-spacing:2px">ТОПОЛОГІЇ РОЗГОРТАННЯ</span>
+  <div class="csep"></div>
+  <button class="cb cbw" onclick="p3Trigger()">⚡ ПОДІЯ НА ВСІХ</button>
+  <button class="cb cbg" onclick="p3HealAll()">↺ HEAL ALL</button>
+  <button class="cb cbn" onclick="p3Reset()">⟳ ОНОВИТИ</button>
+</div>
+<div id="p3b">
+  <div class="tc" id="tc0"><div class="tclbl">TOPO-A · 1 БРАСЛЕТ + BASE</div><canvas id="ct0"></canvas><div class="tcinfo"><div class="tcrow" id="ti0"></div></div></div>
+  <div class="tc" id="tc1"><div class="tclbl">TOPO-B · 2 БРАСЛЕТИ + BASE</div><canvas id="ct1"></canvas><div class="tcinfo"><div class="tcrow" id="ti1"></div></div></div>
+  <div class="tc" id="tc2"><div class="tclbl">TOPO-C · 3 БРАСЛЕТИ + BASE</div><canvas id="ct2"></canvas><div class="tcinfo"><div class="tcrow" id="ti2"></div></div></div>
+</div>
+</div>
+
+<!-- ══════════ P4 COMMUNICATION ══════════ -->
+<div class="pnl" id="p4">
+<div class="cfgbar">
+  <span style="font-family:var(--orb);font-size:.58rem;color:var(--c1);letter-spacing:2px">📻 КОМУНІКАЦІЯ ГРУПИ · ПРОТОКОЛИ ТА СХЕМИ</span>
+  <div class="csep"></div>
+  <button class="cb cbw" onclick="commWound()">⚡ СИМУЛ. ПОРАНЕННЯ</button>
+  <button class="cb cbg" onclick="commHeal()">↺ ВІДНОВИТИ ГРУПУ</button>
+  <button class="cb cbn" onclick="commResetDist()">🎲 НОВІ ПОЗИЦІЇ</button>
+</div>
+<div id="p4b">
+  <div id="p4main">
+
+    <!-- ── Priority levels ── -->
+    <div class="comm-section">
+      <div class="comm-title"><span class="ct-icon">🎯</span>РІВНІ ПРІОРИТЕТУ ПАКЕТІВ</div>
+      <div class="prio-grid" id="prioGrid"></div>
+    </div>
+
+    <!-- ── Flow diagram: normal ── -->
+    <div class="comm-section">
+      <div class="comm-title"><span class="ct-icon">📡</span>СХЕМА: НОРМАЛЬНИЙ РЕЖИМ ЗВ'ЯЗКУ</div>
+      <div class="blockscheme">
+        <canvas id="flowNorm" style="width:100%;height:160px;display:block;"></canvas>
+      </div>
+    </div>
+
+    <!-- ── Flow diagram: critical ── -->
+    <div class="comm-section">
+      <div class="comm-title"><span class="ct-icon">🚨</span>СХЕМА: КРИТИЧНА ПОДІЯ (ПОРАНЕНИЙ)</div>
+      <div class="blockscheme">
+        <canvas id="flowCrit" style="width:100%;height:200px;display:block;"></canvas>
+      </div>
+    </div>
+
+    <!-- ── Multi-hop routing ── -->
+    <div class="comm-section">
+      <div class="comm-title"><span class="ct-icon">🔀</span>СХЕМА: MULTI-HOP МАРШРУТИЗАЦІЯ</div>
+      <div class="blockscheme">
+        <canvas id="flowHop" style="width:100%;height:160px;display:block;"></canvas>
+      </div>
+    </div>
+
+    <!-- ── Packet flow animation ── -->
+    <div class="comm-section">
+      <div class="comm-title"><span class="ct-icon">📦</span>АНІМАЦІЯ ПАКЕТНОГО ПОТОКУ</div>
+      <div class="pkt-flow">
+        <canvas id="pktCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- ── Distance radar ── -->
+    <div class="comm-section">
+      <div class="comm-title"><span class="ct-icon">📍</span>РАДАР ДИСТАНЦІЙ ГРУПИ</div>
+      <div id="distRadar">
+        <canvas id="radarCanvas" style="display:block;width:100%;height:280px;"></canvas>
+        <div class="radar-legend">
+          <div class="rl-item"><div class="rl-dot" style="background:var(--c2)"></div><span class="rl-txt">НОРМА (SpO₂ >90%)</span></div>
+          <div class="rl-item"><div class="rl-dot" style="background:var(--c4)"></div><span class="rl-txt">УВАГА (SpO₂ 80–90%)</span></div>
+          <div class="rl-item"><div class="rl-dot" style="background:var(--c3)"></div><span class="rl-txt">КРИТИЧНО (SpO₂ <80%)</span></div>
+          <div class="rl-item"><div class="rl-dot" style="background:var(--gray)"></div><span class="rl-txt">OFFLINE / НЕ В МЕРЕЖІ</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- #p4main -->
+
+  <!-- ── Sidebar: group status ── -->
+  <div id="p4side">
+    <div class="cs-section">
+      <div class="cs-title">СТАН ГРУПИ · РЕАЛЬНОГО ЧАСУ</div>
+      <div id="csMembers"></div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-title">INJURY REPORT</div>
+      <div id="injuryReport"></div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-title">MESH МАРШРУТИ</div>
+      <div id="meshRoutes"></div>
+    </div>
+    <div class="cs-section">
+      <div class="cs-title">АКТИВНІ СЕСІЇ</div>
+      <div id="activeSessions" style="font-family:var(--mono);font-size:.5rem;color:var(--gray);line-height:1.8;padding:4px 0;"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════ P5 TECH SPECS ══════════ -->
+<div class="pnl" id="p5">
+<div id="p5b"></div>
+</div>
+
+</div><!-- #app -->
+
+<div id="tip"></div>
+<div id="zov" onclick="zoomClose()"><canvas id="zc"></canvas></div>
+
+<script>
+'use strict';
+const C_LIGHT=299792458,UWB_RANGE=152,PX_M=0.28;
+const FREQ_BANDS=[3.1,3.4,3.7,4.0,4.3,4.6,4.9];
+const NAMES=['Альфа','Браво','Чарлі','Дельта','Ехо','Фокстр','Голф','Хотел','Індія','Квебек'];
+const AES_KEYS=['FA3C','8BE1','2D97','C540','71A3','B9F6','3E2C','6D81','A4F5','D30E'];
+const SESS_PFXS=['SK-','TX-','RX-','MX-','HB-'];
+
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const d2=(a,b)=>Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+const ts=()=>new Date().toTimeString().slice(0,12);
+const rttMs=dm=>(dm*2/C_LIGHT)*1000;
+const rttNs=dm=>(dm*2/C_LIGHT)*1e9;
+const tofMeas=(rm,ns)=>rm+rnd(-ns,ns);
+const hwId=id=>`HW:${(0xA000+id*137).toString(16).toUpperCase()}`;
+const aesTag=id=>`AES:${AES_KEYS[id%AES_KEYS.length]}`;
+const sessKey=id=>`${SESS_PFXS[id%SESS_PFXS.length]}${(0x3000+id*89).toString(16).toUpperCase()}`;
+const pad2=n=>String(n).padStart(2,'0');
+
+setInterval(()=>{const n=new Date(),ms=String(n.getMilliseconds()).padStart(3,'0');document.getElementById('hclk').textContent=n.toTimeString().slice(0,8)+'.'+ms;},50);
+
+let aTab=0;
+function sw(i){
+  document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
+  document.querySelectorAll('.pnl').forEach((p,j)=>p.classList.toggle('on',j===i));
+  aTab=i;
+  if(i===0&&!p1Running) setTimeout(p1Init,60);
+  if(i===1&&!p2Done) setTimeout(p2Reset,60);
+  if(i===2) setTimeout(p3Init,60);
+  if(i===3) setTimeout(initComm,60);
+  if(i===4) buildP5();
+}
+
+function rsz(c){
+  const p=c.parentElement;if(!p)return;
+  const r=p.getBoundingClientRect(),nw=Math.floor(r.width),nh=Math.floor(r.height);
+  if(c.width!==nw||c.height!==nh){c.width=nw;c.height=nh;}
+}
+
+let zsrc=null,zraf=null;
+function zoomOpen(id){zsrc=document.getElementById(id);document.getElementById('zov').classList.add('on');zLoop();}
+function zoomClose(){document.getElementById('zov').classList.remove('on');zsrc=null;cancelAnimationFrame(zraf);}
+function zLoop(){
+  if(!zsrc||!document.getElementById('zov').classList.contains('on'))return;
+  const zc=document.getElementById('zc'),maxW=window.innerWidth*.92,maxH=window.innerHeight*.92;
+  const ratio=Math.min(maxW/(zsrc.width||1),maxH/(zsrc.height||1));
+  zc.width=Math.round((zsrc.width||400)*ratio);zc.height=Math.round((zsrc.height||300)*ratio);
+  const cx=zc.getContext('2d');cx.imageSmoothingEnabled=false;
+  if(zsrc.width&&zsrc.height)cx.drawImage(zsrc,0,0,zc.width,zc.height);
+  zraf=requestAnimationFrame(zLoop);
+}
+
+let cfg={n:7,sp:.5,ns:.2,fr:4,br:20,hp:2};
+function uc(){
+  cfg.n=+document.getElementById('cn').value;
+  cfg.sp=+document.getElementById('csp').value/10;
+  cfg.ns=+document.getElementById('cns').value/10;
+  cfg.fr=+document.getElementById('cfr').value;
+  cfg.hp=+document.getElementById('chp').value;
+  document.getElementById('lcn').textContent=cfg.n;
+  document.getElementById('lcsp').textContent=cfg.sp.toFixed(1)+'м/с';
+  document.getElementById('lcns').textContent='±'+cfg.ns.toFixed(1)+'м';
+  document.getElementById('lcfr').textContent=cfg.fr+'Гц';
+  document.getElementById('lchp').textContent=cfg.hp;
+}
+uc();
+
+function mkNode(id,anchor,cvs){
+  return{id,name:NAMES[id],anchor,
+    x:rnd(80,cvs.width-80),y:rnd(80,cvs.height-80),
+    vx:rnd(-1,1)*(anchor?.08:.8),vy:rnd(-1,1)*(anchor?.08:.8),
+    state:'active',spo2:rnd(95,100),hr:rnd(60,85),energy:rnd(80,100),
+    hwId:hwId(id),aes:aesTag(id),sess:sessKey(id),
+    freq:FREQ_BANDS[id%FREQ_BANDS.length],
+    lastRTT:0,lastNs:0,lastReal:0,lastMeas:0,
+    txT:0,pktSent:0,priority:0,
+    kr:rnd(35,52),kt:rnd(10,19),burst:0,healFl:0,_pr:0,
+  };
+}
+
+// ─── DRAW HELPERS ───
+function drawGrid(cx,w,h,col='#090f1c',step=52){
+  cx.strokeStyle=col;cx.lineWidth=.5;
+  for(let x=0;x<w;x+=step){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,h);cx.stroke();}
+  for(let y=0;y<h;y+=step){cx.beginPath();cx.moveTo(0,y);cx.lineTo(w,y);cx.stroke();}
+}
+
+function drawEdge(cx,x,y,lbl='EDGE'){
+  const t=Date.now()/1000;
+  [.3,.6,.9].forEach((r,i)=>{
+    const ph=(t*.7+i*.3)%1;
+    cx.beginPath();cx.arc(x,y,ph*72,0,Math.PI*2);
+    cx.strokeStyle=`rgba(0,180,255,${(1-ph)*.08})`;cx.lineWidth=1;cx.stroke();
+  });
+  cx.strokeStyle='rgba(0,180,255,.55)';cx.fillStyle='rgba(0,180,255,.1)';cx.lineWidth=1.5;
+  cx.beginPath();cx.rect(x-22,y-15,44,30);cx.stroke();cx.fill();
+  cx.font='bold 7px "Orbitron"';cx.fillStyle='#00b4ff';cx.textAlign='center';
+  cx.fillText(lbl,x,y-2);cx.fillText('BASE',x,y+9);cx.textAlign='left';
+}
+
+function nodeCol(n){
+  if(n.state==='offline') return '#253a56';
+  if(n.state==='critical') return '#ff3355';
+  if(n.anchor) return '#ff9900';
+  return '#00ffaa';
+}
+
+function drawNode(cx,n,noiseM){
+  if(n.state==='offline'){
+    cx.save();cx.globalAlpha=.22;cx.strokeStyle='#253a56';cx.lineWidth=2;
+    cx.beginPath();cx.moveTo(n.x-9,n.y-9);cx.lineTo(n.x+9,n.y+9);cx.stroke();
+    cx.beginPath();cx.moveTo(n.x+9,n.y-9);cx.lineTo(n.x-9,n.y+9);cx.stroke();
+    cx.restore();return;
+  }
+  const col=nodeCol(n),r=n.anchor?11:8;
+  if(n.healFl>0){
+    cx.beginPath();cx.arc(n.x,n.y,r+n.healFl,0,Math.PI*2);
+    cx.strokeStyle=`rgba(0,255,170,${n.healFl/80*.55})`;cx.lineWidth=2.5;cx.stroke();
+  }
+  // Kalman ring
+  cx.beginPath();cx.arc(n.x,n.y,n.kr,0,Math.PI*2);
+  const kcol=n.state==='critical'?'255,51,85':'0,180,255';
+  cx.strokeStyle=`rgba(${kcol},.16)`;cx.setLineDash([3,7]);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);
+  // UWB range ring
+  cx.beginPath();cx.arc(n.x,n.y,UWB_RANGE,0,Math.PI*2);
+  cx.strokeStyle='rgba(0,180,255,.02)';cx.lineWidth=1;cx.stroke();
+  if(n.burst>0){
+    const bf=n.burst*1.2;
+    cx.beginPath();cx.arc(n.x,n.y,r+bf,0,Math.PI*2);
+    cx.strokeStyle=`rgba(255,220,0,${n.burst/90})`;cx.lineWidth=2;cx.stroke();
+  }
+  if(n.state==='critical'){
+    n._pr=(n._pr||0)+1.5;if(n._pr>75)n._pr=0;
+    cx.beginPath();cx.arc(n.x,n.y,r+n._pr,0,Math.PI*2);
+    cx.strokeStyle=`rgba(255,51,85,${.55*(1-n._pr/75)})`;cx.lineWidth=2;cx.stroke();
+  }
+  const gcol=n.state==='critical'?'255,51,85':n.anchor?'255,153,0':'0,255,170';
+  const grd=cx.createRadialGradient(n.x,n.y,0,n.x,n.y,r*3.5);
+  grd.addColorStop(0,`rgba(${gcol},.3)`);grd.addColorStop(1,`rgba(${gcol},0)`);
+  cx.beginPath();cx.arc(n.x,n.y,r*3.5,0,Math.PI*2);cx.fillStyle=grd;cx.fill();
+  cx.beginPath();cx.arc(n.x,n.y,r,0,Math.PI*2);
+  cx.fillStyle=col;cx.fill();cx.strokeStyle='rgba(0,0,0,.5)';cx.lineWidth=1.5;cx.stroke();
+  cx.font='bold 8px "Orbitron"';cx.fillStyle=col;cx.globalAlpha=.92;
+  cx.fillText(n.name.slice(0,3).toUpperCase(),n.x+r+4,n.y-2);
+  cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(80,140,190,.7)';
+  cx.fillText(`${n.lastRTT.toFixed(4)}ms`,n.x+r+4,n.y+8);
+  // Distance label
+  if(n.lastReal>0){
+    cx.fillStyle='rgba(255,215,0,.7)';
+    cx.fillText(`${n.lastReal.toFixed(1)}м`,n.x+r+4,n.y+17);
+  }
+  cx.globalAlpha=1;
+  if(n.state==='critical'){
+    // injured badge
+    cx.fillStyle='rgba(255,51,85,.92)';cx.fillRect(n.x-22,n.y-r-32,44,23);
+    cx.strokeStyle='#ff3355';cx.lineWidth=1;cx.strokeRect(n.x-22,n.y-r-32,44,23);
+    cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#fff';cx.textAlign='center';
+    cx.fillText(`SpO₂:${Math.round(n.spo2)}%`,n.x,n.y-r-22);
+    cx.fillText(`ЧСС:${Math.round(n.hr)}`,n.x,n.y-r-13);
+    cx.textAlign='left';
+    cx.beginPath();cx.arc(n.x+r,n.y-r,6,0,Math.PI*2);
+    cx.fillStyle='#ff3355';cx.fill();
+    cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#fff';
+    cx.textAlign='center';cx.fillText('P5',n.x+r,n.y-r+3);cx.textAlign='left';
+  }
+}
+
+function drawLinks(cx,nodes,ns){
+  const alive=nodes.filter(n=>n.state!=='offline');
+  for(let i=0;i<alive.length;i++){
+    for(let j=i+1;j<alive.length;j++){
+      const a=alive[i],b=alive[j];
+      if(d2(a,b)<UWB_RANGE){
+        const rd=d2(a,b)*PX_M,rms=rttMs(rd);
+        const alpha=(1-d2(a,b)/UWB_RANGE)*.38,hue=rms<.01?185:rms<.1?130:55;
+        cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);
+        cx.strokeStyle=`hsla(${hue},100%,65%,${alpha})`;cx.lineWidth=1;cx.stroke();
+        cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(60,110,160,.55)';
+        cx.fillText(`${rms.toFixed(4)}ms`,(a.x+b.x)/2+2,(a.y+b.y)/2-3);
+        // Distance label on links
+        const distM=d2(a,b)*PX_M;
+        cx.fillStyle='rgba(255,215,0,.45)';
+        cx.fillText(`${distM.toFixed(1)}м`,(a.x+b.x)/2+2,(a.y+b.y)/2+6);
+      }
+    }
+  }
+}
+
+function triPoint(target,anchors){
+  if(!anchors.length) return null;
+  let wx=0,wy=0,ws=0;
+  anchors.forEach(a=>{const w=1/Math.max(d2(target,a),.1);wx+=a.x*w;wy+=a.y*w;ws+=w;});
+  return{x:wx/ws,y:wy/ws};
+}
+
+function getNeighbors(n,nodes){
+  return nodes.filter(m=>m.id!==n.id&&m.state!=='offline'&&d2(n,m)<UWB_RANGE);
+}
+
+function getLinks(nodes){
+  const out=[],alive=nodes.filter(n=>n.state!=='offline');
+  for(let i=0;i<alive.length;i++)
+    for(let j=i+1;j<alive.length;j++)
+      if(d2(alive[i],alive[j])<UWB_RANGE) out.push([alive[i],alive[j]]);
+  return out;
+}
+
+function buildPath(src,nodes,hops){
+  const edge={x:42,y:42};let path=[src],cur=src;
+  for(let h=0;h<hops;h++){
+    const nb=getNeighbors(cur,nodes).filter(m=>!path.find(p=>p.id===m.id)).sort((a,b)=>d2(a,edge)-d2(b,edge));
+    if(!nb.length) break;
+    path.push(nb[0]);cur=nb[0];
+    if(d2(nb[0],edge)<130) break;
+  }
+  path.push(edge);return path;
+}
+
+// ═══ TAB 1 ═══
+let p1N=[],p1Running=false,p1Raf=null,p1T=0,p1Paused=false,p1Logs=[],p1Pkt=0;
+const RTTH=[],FRQH=[],MH=60;
+const CHART_PAL=['#00b4ff','#00ffaa','#ff9900','#ff3355','#c844ff','#ffd700','#ff6688','#88ccff','#ffaa44','#44ffcc'];
+
+function p1Init(){
+  uc();
+  const cvs=document.getElementById('c1');rsz(cvs);
+  p1N=[];
+  for(let i=0;i<cfg.n;i++) p1N.push(mkNode(i,i<3,cvs));
+  p1Logs=[];p1Pkt=0;RTTH.length=0;FRQH.length=0;p1T=0;p1Running=true;p1Paused=false;
+  document.getElementById('ppb').textContent='⏸ ПАУЗА';
+  lg1('Систему ініціалізовано — '+cfg.n+' вузлів активні','s');
+  lg1('UWB ToF · AES-128 · GPS DENIED · Freq-hop 3.1–4.9G','i');
+  if(p1Raf) cancelAnimationFrame(p1Raf);
+  p1Loop();
+}
+
+function p1Pause(){p1Paused=!p1Paused;document.getElementById('ppb').textContent=p1Paused?'▶ ПРОДОВЖ':'⏸ ПАУЗА';}
+
+function p1Kill(){
+  const alive=p1N.filter(n=>n.state!=='offline');if(!alive.length) return;
+  const n=alive[Math.floor(Math.random()*alive.length)];
+  n.state='offline';n.vx=0;n.vy=0;
+  lg1(`ВТРАТА ВУЗЛА: ${n.name} — self-healing...`,'e');
+  setTimeout(()=>{
+    if(n.state==='offline'){
+      const cvs=document.getElementById('c1');
+      n.state='active';n.x=rnd(80,cvs.width-80);n.y=rnd(80,cvs.height-80);
+      n.vx=rnd(-1,1)*cfg.sp;n.vy=rnd(-1,1)*cfg.sp;n.energy=rnd(50,80);n.healFl=80;
+      lg1(`SELF-HEAL: ${n.name} → mesh відновлено`,'s');
+    }
+  },3000+Math.random()*4000);
+}
+
+function p1Heal(){
+  p1N.forEach(n=>{
+    if(n.state==='offline'||n.state==='critical'){
+      const cvs=document.getElementById('c1');
+      n.state='active';n.x=rnd(80,cvs.width-80);n.y=rnd(80,cvs.height-80);
+      n.vx=rnd(-1,1)*cfg.sp;n.vy=rnd(-1,1)*cfg.sp;n.healFl=90;n.spo2=rnd(93,100);n.hr=rnd(60,85);n.priority=0;
+    }
+  });lg1('HEAL-ALL: всі вузли відновлено','s');
+}
+
+function p1Event(){
+  const alive=p1N.filter(n=>n.state==='active');if(!alive.length) return;
+  const n=alive[Math.floor(Math.random()*alive.length)];
+  n.state='critical';n.spo2=rnd(62,78);n.hr=rnd(140,205);n.priority=5;n.burst=90;
+  lg1(`⚠ ПОРАНЕННЯ: ${n.name} — SpO₂ ${Math.round(n.spo2)}% ЧСС ${Math.round(n.hr)}`,'e');
+  lg1(`BURST P5: ${n.name}→edge · ${n.aes} · ${n.sess}`,'w');
+  getNeighbors(n,p1N).slice(0,2).forEach((nb,i)=>{
+    nb.burst=50;
+    setTimeout(()=>lg1(`RELAY HOP${i+1}: ${n.name}→${nb.name}→edge`,'i'),80+i*60);
+  });
+}
+
+function p1Update(){
+  if(p1Paused) return;p1T++;
+  const cvs=document.getElementById('c1');
+  p1N.forEach(n=>{
+    if(n.state==='offline') return;
+    n.x+=n.vx*cfg.sp;n.y+=n.vy*cfg.sp;
+    if(n.x<40||n.x>cvs.width-40) n.vx*=-1;
+    if(n.y<40||n.y>cvs.height-40) n.vy*=-1;
+    if(n.anchor){n.vx*=.985;n.vy*=.985;}
+    n.kr+=(n.kt-n.kr)*.005;
+    n.burst=Math.max(0,n.burst-1.8);n.healFl=Math.max(0,n.healFl-1.4);
+    if(n.state==='active'){n.spo2=Math.min(100,Math.max(88,n.spo2+rnd(-.05,.05)));n.hr=Math.max(45,n.hr+rnd(-.1,.1));}
+    if(n.state==='critical'){n.spo2=Math.max(60,n.spo2-.02);n.hr=Math.min(225,n.hr+.04);}
+    n.energy=Math.max(0,n.energy-.001);n.txT+=16;
+    if(n.txT>=1000/cfg.fr){
+      n.txT=0;n.freq=FREQ_BANDS[Math.floor(Math.random()*FREQ_BANDS.length)];
+      const nb=getNeighbors(n,p1N);
+      if(nb.length){
+        const rd=d2(n,nb[0])*PX_M,md=tofMeas(rd,cfg.ns);
+        n.lastRTT=rttMs(rd);n.lastNs=rttNs(rd);n.lastReal=rd;n.lastMeas=md;
+        RTTH.push({t:p1T,v:n.lastRTT,id:n.id});
+        FRQH.push({t:p1T,v:n.freq,id:n.id});
+        if(RTTH.length>MH*cfg.n) RTTH.shift();
+        if(FRQH.length>MH*cfg.n) FRQH.shift();
+        p1Pkt++;n.pktSent++;
+      }
+    }
+  });
+  if(p1T%390===0){
+    const ac=p1N.filter(n=>n.state==='active');
+    if(ac.length>1){const n=ac[Math.floor(Math.random()*ac.length)];n.spo2-=rnd(2,10);if(n.spo2<88){n.state='critical';n.priority=5;n.burst=80;lg1(`AUTO: ${n.name} SpO₂ ${Math.round(n.spo2)}%`,'e');}}
+  }
+}
+
+function p1Draw(){
+  const cvs=document.getElementById('c1');rsz(cvs);
+  const cx=cvs.getContext('2d');
+  cx.clearRect(0,0,cvs.width,cvs.height);cx.fillStyle='#020912';cx.fillRect(0,0,cvs.width,cvs.height);
+  drawGrid(cx,cvs.width,cvs.height);
+  drawLinks(cx,p1N,cfg.ns);
+  const anchors=p1N.filter(n=>n.state!=='offline'&&n.anchor);
+  p1N.filter(n=>n.state!=='offline'&&!n.anchor).forEach(t=>{
+    const pt=triPoint(t,anchors);
+    if(pt){
+      cx.beginPath();cx.arc(pt.x,pt.y,6,0,Math.PI*2);cx.fillStyle='rgba(255,215,0,.8)';cx.fill();
+      cx.strokeStyle='#ffd700';cx.lineWidth=1.2;cx.stroke();
+      cx.font='7px "Share Tech Mono"';cx.fillStyle='#ffd700';cx.fillText('▲TRI',pt.x+8,pt.y+3);
+      cx.beginPath();cx.moveTo(t.x,t.y);cx.lineTo(pt.x,pt.y);
+      cx.strokeStyle='rgba(255,215,0,.18)';cx.setLineDash([2,5]);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);
+    }
+  });
+  p1N.filter(n=>n.state==='critical').forEach(n=>{
+    const path=buildPath(n,p1N,cfg.hp);
+    if(path.length>1){
+      cx.save();cx.setLineDash([4,6]);cx.strokeStyle='rgba(255,51,85,.72)';cx.lineWidth=2;
+      cx.shadowColor='#ff3355';cx.shadowBlur=8;
+      cx.beginPath();cx.moveTo(path[0].x,path[0].y);path.slice(1).forEach(p=>cx.lineTo(p.x,p.y));
+      cx.stroke();cx.setLineDash([]);cx.shadowBlur=0;cx.restore();
+      path.slice(1,-1).forEach((p,i)=>{cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#ff9900';cx.fillText(`H${i+1}`,p.x+8,p.y-8);});
+    }
+  });
+  p1N.forEach(n=>drawNode(cx,n,cfg.ns));
+  drawEdge(cx,42,42);
+  cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.85)';
+  cx.fillText(`GPS:DENIED · ToF:UWB · ENC:AES-128 · HOP:${cfg.hp} · ${cfg.fr}Hz · ±${cfg.ns}м`,8,cvs.height-8);
+}
+
+function p1DrawCharts(){
+  const rc=document.getElementById('crtt');rsz(rc);
+  const rx=rc.getContext('2d');
+  rx.clearRect(0,0,rc.width,rc.height);rx.fillStyle='#06101e';rx.fillRect(0,0,rc.width,rc.height);
+  drawGrid(rx,rc.width,rc.height,'#0a1628',28);
+  const rdat=RTTH.slice(-MH);
+  if(rdat.length>1){
+    const maxV=Math.max(...rdat.map(d=>d.v),.001)*1.3,ph=rc.height-32,pw=rc.width-48;
+    rx.strokeStyle='rgba(80,130,170,.3)';rx.lineWidth=1;
+    rx.beginPath();rx.moveTo(40,6);rx.lineTo(40,ph+6);rx.lineTo(rc.width-8,ph+6);rx.stroke();
+    for(let i=0;i<=4;i++){
+      const y=ph+6-i*ph/4;
+      rx.font='7px "Share Tech Mono"';rx.fillStyle='#253a56';rx.fillText((maxV*i/4).toFixed(4),2,y+3);
+      rx.strokeStyle='rgba(80,130,170,.07)';rx.beginPath();rx.moveTo(40,y);rx.lineTo(rc.width-8,y);rx.stroke();
+    }
+    const ids=[...new Set(rdat.map(d=>d.id))];
+    ids.forEach(id=>{
+      const data=rdat.filter(d=>d.id===id);if(data.length<2)return;
+      rx.beginPath();
+      data.forEach((d,i)=>{const xi=40+(i/MH)*pw,yi=ph+6-(d.v/maxV)*ph;i===0?rx.moveTo(xi,yi):rx.lineTo(xi,yi);});
+      rx.strokeStyle=CHART_PAL[id%10];rx.lineWidth=1.5;rx.globalAlpha=.85;rx.stroke();rx.globalAlpha=1;
+    });
+    rx.font='7px "Share Tech Mono"';
+    ids.forEach((id,i)=>{rx.fillStyle=CHART_PAL[id%10];rx.fillRect(42+i*46,2,7,5);rx.fillStyle='rgba(120,170,210,.7)';rx.fillText(NAMES[id].slice(0,3),51+i*46,8);});
+  }
+  const fc=document.getElementById('cfrq');rsz(fc);const fx=fc.getContext('2d');
+  fx.clearRect(0,0,fc.width,fc.height);fx.fillStyle='#06101e';fx.fillRect(0,0,fc.width,fc.height);
+  drawGrid(fx,fc.width,fc.height,'#0a1628',28);
+  const alive=p1N.filter(n=>n.state!=='offline');
+  if(alive.length){
+    const bw=(fc.width-48)/alive.length-3,ph=fc.height-32,minF=3.0,maxF=5.0;
+    fx.strokeStyle='rgba(80,130,170,.3)';fx.lineWidth=1;
+    fx.beginPath();fx.moveTo(40,6);fx.lineTo(40,ph+6);fx.lineTo(fc.width-8,ph+6);fx.stroke();
+    for(let i=0;i<=4;i++){
+      const y=ph+6-i*ph/4;fx.font='7px "Share Tech Mono"';fx.fillStyle='#253a56';fx.fillText((minF+i*(maxF-minF)/4).toFixed(1)+'G',2,y+3);
+      fx.strokeStyle='rgba(80,130,170,.07)';fx.beginPath();fx.moveTo(40,y);fx.lineTo(fc.width-8,y);fx.stroke();
+    }
+    alive.forEach((n,i)=>{
+      const xi=42+i*(bw+3),norm=(n.freq-minF)/(maxF-minF),bh=norm*ph;
+      const col=n.state==='critical'?'#ff3355':n.anchor?'#ff9900':'#00b4ff';
+      fx.fillStyle=col+'30';fx.fillRect(xi,ph+6-bh,bw,bh);
+      fx.strokeStyle=col;fx.lineWidth=1;fx.strokeRect(xi,ph+6-bh,bw,bh);
+      fx.font='7px "Share Tech Mono"';fx.fillStyle=col;fx.textAlign='center';
+      fx.fillText(n.freq.toFixed(1),xi+bw/2,ph+6-bh-3);
+      fx.fillText(n.name.slice(0,3),xi+bw/2,ph+20);fx.textAlign='left';
+    });
+  }
+}
+
+function p1UpdateSidebar(){
+  const ac=p1N.filter(n=>n.state!=='offline').length;
+  const of=p1N.filter(n=>n.state==='offline').length;
+  const lk=getLinks(p1N).length;
+  const ar=p1N.filter(n=>n.lastRTT>0);const avgR=ar.length?ar.reduce((s,n)=>s+n.lastRTT,0)/ar.length:0;
+  const ak=p1N.filter(n=>n.state!=='offline');const avgK=ak.length?ak.reduce((s,n)=>s+n.kr,0)/ak.length:0;
+  document.getElementById('ma').textContent=ac;
+  document.getElementById('mo').textContent=of;
+  document.getElementById('ml').textContent=lk;
+  document.getElementById('mr').textContent=avgR>0?avgR.toFixed(5)+'ms':'—';
+  document.getElementById('mk').textContent=Math.round(avgK*PX_M)+'м';
+  document.getElementById('mp').textContent=p1Pkt;
+  const nl=document.getElementById('nl1');nl.innerHTML='';
+  [...p1N].sort((a,b)=>({'critical':0,'active':1,'offline':2}[a.state]-{'critical':0,'active':1,'offline':2}[b.state])).forEach(n=>{
+    const el=document.createElement('div');
+    const col=n.state==='critical'?'var(--c3)':n.anchor?'var(--c4)':'var(--c2)';
+    const rc2=n.lastRTT<.01?'var(--c2)':n.lastRTT<.1?'var(--c6)':'var(--c4)';
+    el.className=`nr ${n.state==='offline'?'of':n.state==='critical'?'cr':n.anchor?'an':'ac'}`;
+    const distStr=n.lastReal>0?`${n.lastReal.toFixed(1)}м`:'—';
+    el.innerHTML=`<span class="nid">#${pad2(n.id)}</span>
+      <div class="ni">
+        <div class="nn" style="color:${col}">${n.name}${n.anchor?' ⚓':''}</div>
+        <div class="nd">${n.state==='offline'?'OFFLINE':`SpO₂:${Math.round(n.spo2)}% · ЧСС:${Math.round(n.hr)} · ${n.freq.toFixed(1)}G`}</div>
+      </div>
+      <div class="nrtt" style="color:${rc2}">
+        ${n.state==='offline'?'—':`<span style="color:var(--c6);font-size:.6rem">${distStr}</span><br>${n.lastRTT.toFixed(5)}ms`}
+      </div>`;
+    nl.appendChild(el);
+  });
+}
+
+function lg1(msg,type=''){
+  p1Logs.unshift({msg,type,ts:ts()});if(p1Logs.length>30) p1Logs.pop();
+  document.getElementById('lg1').innerHTML=p1Logs.map(l=>`<div class="ll ${l.type}">[${l.ts}] ${l.msg}</div>`).join('');
+}
+
+function p1Loop(){
+  if(!p1Running) return;
+  p1Update();p1Draw();p1DrawCharts();p1UpdateSidebar();
+  p1Raf=requestAnimationFrame(p1Loop);
+}
+
+const C1=document.getElementById('c1');
+C1.addEventListener('mousemove',e=>{
+  const r=C1.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  const hit=p1N.find(n=>d2({x:mx,y:my},n)<18);
+  const tip=document.getElementById('tip');
+  if(hit){
+    const rd=d2(hit,{x:42,y:42})*PX_M,md=tofMeas(rd,cfg.ns);
+    tip.style.display='block';tip.style.left=(e.clientX+16)+'px';tip.style.top=(e.clientY-14)+'px';
+    const statusCol=hit.state==='critical'?'#ff3355':hit.state==='offline'?'#253a56':'#00ffaa';
+    const spo2col=hit.spo2>90?'#00ffaa':hit.spo2>80?'#ff9900':'#ff3355';
+    tip.innerHTML=`<div class="tth">${hit.name} · ${hit.anchor?'⚓ ЯКІР':'● ВУЗОЛ'}</div>
+      ${hit.state==='critical'?`<div class="ttbig">⚠ ПОРАНЕНИЙ ⚠</div><div class="ttdiv"></div>`:''}
+      <div class="ttr"><span class="ttk">Стан</span><span class="ttv" style="color:${statusCol}">${hit.state.toUpperCase()}</span></div>
+      <div class="ttr"><span class="ttk">SpO₂</span><span class="ttv" style="color:${spo2col}">${Math.round(hit.spo2)}%</span></div>
+      <div class="ttr"><span class="ttk">ЧСС</span><span class="ttv">${Math.round(hit.hr)} уд/хв</span></div>
+      <div class="ttdiv"></div>
+      <div class="ttr"><span class="ttk">Дистанція до BASE</span><span class="ttv" style="color:#ffd700">${rd.toFixed(2)} м</span></div>
+      <div class="ttr"><span class="ttk">ToF виміряно</span><span class="ttv">${md.toFixed(2)} м (±${cfg.ns}м)</span></div>
+      <div class="ttr"><span class="ttk">RTT</span><span class="ttv">${rttMs(rd).toFixed(7)} мс</span></div>
+      <div class="ttr"><span class="ttk">RTT (нс)</span><span class="ttv">${rttNs(rd).toFixed(4)} нс</span></div>
+      <div class="ttdiv"></div>
+      <div class="ttr"><span class="ttk">HW ID</span><span class="ttv">${hit.hwId}</span></div>
+      <div class="ttr"><span class="ttk">AES Key</span><span class="ttv">${hit.aes}</span></div>
+      <div class="ttr"><span class="ttk">Freq hop</span><span class="ttv">${hit.freq.toFixed(1)} ГГц</span></div>
+      <div class="ttr"><span class="ttk">Калман радіус</span><span class="ttv">${(hit.kr*PX_M).toFixed(2)} м</span></div>
+      <div class="ttr"><span class="ttk">Енергія</span><span class="ttv">${Math.round(hit.energy)}%</span></div>
+      <div class="ttr"><span class="ttk">Пакетів</span><span class="ttv">${hit.pktSent}</span></div>`;
+  } else tip.style.display='none';
+});
+C1.addEventListener('mouseleave',()=>{document.getElementById('tip').style.display='none';});
+
+// ═══ TAB 2 ═══
+let p2N=[],p2Running=false,p2Raf=null,p2T=0,p2Done=false,p2L=[],p2Ev=[],p2TL=[];
+let t2cfg={n:6,ns:.2};
+
+function t2uc(){
+  t2cfg.n=+document.getElementById('t2n').value;
+  t2cfg.ns=+document.getElementById('t2ns').value/10;
+  document.getElementById('t2ln').textContent=t2cfg.n;
+  document.getElementById('t2lns').textContent='±'+t2cfg.ns.toFixed(1)+'м';
+}
+t2uc();
+
+function p2Reset(){
+  t2uc();const cvs=document.getElementById('c2');rsz(cvs);
+  p2N=[];p2L=[];p2Ev=[];p2TL=[];p2T=0;p2Running=false;p2Done=true;
+  for(let i=0;i<t2cfg.n;i++) p2N.push(mkNode(i,i<3,cvs));
+  lg2('Сценарій ініціалізовано — '+t2cfg.n+' вузлів','s');
+  p2Ev=[{n:'Система активна',d:'Mesh online. GPS заглушено. Очікування події.',t:'if'}];
+  renderEvL();
+}
+
+function p2Start(){
+  if(!p2Done) p2Reset();
+  p2Running=true;
+  if(p2Raf) cancelAnimationFrame(p2Raf);
+  p2Loop();
+}
+
+function p2Shell(){
+  if(!p2Running) p2Start();
+  const alive=p2N.filter(n=>n.state==='active');if(!alive.length) return;
+  const epi=alive[Math.floor(Math.random()*alive.length)];
+  const near=alive.filter(n=>n.id!==epi.id&&d2(n,epi)<120);
+  const vics=[epi,...near.slice(0,1)];
+  const t0=Date.now();
+  p2TL=[{t:0,lbl:'💥 ПРИЛІТ СНАРЯДА',col:'#ff3355',y:.1}];
+  vics.forEach((n,i)=>{
+    n.state='critical';n.spo2=rnd(52,75);n.hr=rnd(148,215);n.priority=5;n.burst=100;
+    const rd=d2(n,{x:42,y:42})*PX_M,rms=rttMs(rd);
+    n.lastRTT=rms;n.lastMeas=tofMeas(rd,t2cfg.ns);n.lastReal=rd;
+    setTimeout(()=>{lg2(`BURST P5: ${n.name}→edge | RTT:${rms.toFixed(5)}ms`,'e');p2TL.push({t:Date.now()-t0,lbl:`${n.name}:BURST P5`,col:'#ff3355',y:.22+i*.14});},45+i*65);
+  });
+  if(near.length>1){const dead=near[1];dead.state='offline';lg2(`ВТРАЧЕНО: ${dead.name}`,'e');p2TL.push({t:190,lbl:`${dead.name}:OFFLINE`,col:'#ff9900',y:.54});setTimeout(()=>p2AutoHeal(dead),3200+Math.random()*3000);}
+  p2TL.push({t:430,lbl:'Edge:ОТРИМАНО',col:'#00b4ff',y:.44});
+  p2TL.push({t:490,lbl:'ЕВАКУАЦІЯ',col:'#00ffaa',y:.85});
+  p2Ev.unshift({n:'💥 ПРИЛІТ СНАРЯДА',d:`Епіцентр:${epi.name} | Постраждалих:${vics.length} | P:CRITICAL`,t:'cr'});
+  renderEvL();lg2(`ПОДІЯ: ${new Date(t0).toISOString()}`,'e');
+}
+
+function p2Door(){
+  if(!p2Running) p2Start();
+  const alive=p2N.filter(n=>n.state==='active');if(!alive.length) return;
+  const n=alive[Math.floor(Math.random()*alive.length)];
+  n.priority=3;n.burst=75;
+  const rd=d2(n,{x:42,y:42})*PX_M,rms=rttMs(rd);
+  n.lastRTT=rms;n.lastMeas=tofMeas(rd,t2cfg.ns);n.lastReal=rd;
+  p2TL=[{t:0,lbl:'🚪 СЕНСОР: ДВЕРІ',col:'#ffd700',y:.12},{t:Math.round(rms*800),lbl:`${n.name}:BURST P3`,col:'#ff9900',y:.35},{t:Math.round(rms*800)+150,lbl:'Edge:P3 RECV',col:'#00b4ff',y:.6}];
+  lg2(`ДВЕРІ: ${n.name} | RTT:${rms.toFixed(5)}ms | P3`,'w');
+  p2Ev.unshift({n:'🚪 ВІДКРИТТЯ ДВЕРЕЙ',d:`Вузол:${n.name} | RTT:${rms.toFixed(5)}ms | P:3`,t:'dr'});
+  renderEvL();
+}
+
+function p2Heal(){
+  p2N.forEach(n=>{if(n.state==='offline'||n.state==='critical'){const cvs=document.getElementById('c2');n.state='active';n.x=rnd(80,cvs.width-80);n.y=rnd(80,cvs.height-80);n.vx=rnd(-.3,.3);n.vy=rnd(-.3,.3);n.healFl=90;n.spo2=rnd(92,99);n.hr=rnd(65,85);n.priority=0;}});
+  p2Ev.unshift({n:'↺ САМОВІДНОВЛЕННЯ',d:'Всі вузли відновлено. Топологія перебудована.',t:'hl'});
+  renderEvL();lg2('SELF-HEAL: mesh відновлено','s');
+}
+
+function p2AutoHeal(n){
+  if(n.state==='offline'){const cvs=document.getElementById('c2');n.state='active';n.x=rnd(80,cvs.width-80);n.y=rnd(80,cvs.height-80);n.vx=rnd(-.3,.3);n.vy=rnd(-.3,.3);n.healFl=100;
+    p2Ev.unshift({n:`↺ AUTO-HEAL: ${n.name}`,d:'Альтернативний маршрут знайдено.',t:'hl'});renderEvL();lg2(`AUTO-HEAL: ${n.name}→mesh`,'s');}
+}
+
+function p2Update(){
+  if(!p2Running) return;p2T++;
+  const cvs=document.getElementById('c2');
+  p2N.forEach(n=>{
+    if(n.state==='offline') return;
+    n.x+=n.vx;n.y+=n.vy;
+    if(n.x<50||n.x>cvs.width-50) n.vx*=-1;if(n.y<50||n.y>cvs.height-50) n.vy*=-1;
+    n.kr+=(n.kt-n.kr)*.006;n.burst=Math.max(0,n.burst-1.5);n.healFl=Math.max(0,n.healFl-1.4);
+    if(n.state==='critical'){n.spo2=Math.max(52,n.spo2-.015);n.hr=Math.min(230,n.hr+.03);}
+    if(p2T%85===0) n.freq=FREQ_BANDS[Math.floor(Math.random()*FREQ_BANDS.length)];
+  });
+}
+
+function p2DrawMap(){
+  const cvs=document.getElementById('c2');rsz(cvs);
+  const cx=cvs.getContext('2d');
+  cx.clearRect(0,0,cvs.width,cvs.height);cx.fillStyle='#020912';cx.fillRect(0,0,cvs.width,cvs.height);
+  drawGrid(cx,cvs.width,cvs.height);
+  drawLinks(cx,p2N,t2cfg.ns);
+  p2N.filter(n=>n.state==='critical').forEach(n=>{
+    const path=buildPath(n,p2N,2);
+    if(path.length>1){
+      cx.save();cx.setLineDash([4,6]);cx.strokeStyle='rgba(255,51,85,.75)';cx.lineWidth=2.5;
+      cx.shadowColor='#ff3355';cx.shadowBlur=10;
+      cx.beginPath();cx.moveTo(path[0].x,path[0].y);path.slice(1).forEach(p=>cx.lineTo(p.x,p.y));
+      cx.stroke();cx.setLineDash([]);cx.shadowBlur=0;cx.restore();
+      path.slice(1,-1).forEach((p,i)=>{cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#ff9900';cx.fillText(`HOP${i+1}`,p.x+8,p.y-8);});
+    }
+  });
+  const anch=p2N.filter(n=>n.state!=='offline'&&n.anchor);
+  p2N.filter(n=>n.state!=='offline'&&!n.anchor).forEach(t=>{
+    const pt=triPoint(t,anch);
+    if(pt){cx.beginPath();cx.arc(pt.x,pt.y,6,0,Math.PI*2);cx.fillStyle='rgba(255,215,0,.8)';cx.fill();cx.strokeStyle='#ffd700';cx.lineWidth=1;cx.stroke();}
+  });
+  p2N.forEach(n=>drawNode(cx,n,t2cfg.ns));
+  drawEdge(cx,42,42);
+  cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
+  cx.fillText('CRITICAL SCENARIO · UWB ToF · AES-128 · GPS-DENIED',8,cvs.height-8);
+}
+
+function p2DrawTL(){
+  const cvs=document.getElementById('ctl');rsz(cvs);
+  const cx=cvs.getContext('2d');
+  cx.clearRect(0,0,cvs.width,cvs.height);cx.fillStyle='#06101e';cx.fillRect(0,0,cvs.width,cvs.height);
+  drawGrid(cx,cvs.width,cvs.height,'#0a1628',38);
+  if(!p2TL.length){
+    cx.font='11px "Share Tech Mono"';cx.fillStyle='#253a56';cx.textAlign='center';
+    cx.fillText('Натисніть "СНАРЯД" або "ДВЕРІ" для запуску сценарію',cvs.width/2,cvs.height/2);
+    cx.textAlign='left';return;
+  }
+  const maxT=Math.max(...p2TL.map(e=>e.t),500)*1.12,ml=55,ph=cvs.height-26,pw=cvs.width-ml-18;
+  cx.strokeStyle='rgba(80,130,170,.3)';cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(ml,5);cx.lineTo(ml,ph);cx.lineTo(cvs.width-14,ph);cx.stroke();
+  for(let i=0;i<=5;i++){
+    const x=ml+i*pw/5;
+    cx.strokeStyle='rgba(80,130,170,.09)';cx.beginPath();cx.moveTo(x,5);cx.lineTo(x,ph);cx.stroke();
+    cx.font='7px "Share Tech Mono"';cx.fillStyle='#253a56';cx.textAlign='center';cx.fillText(Math.round(maxT*i/5)+'мс',x,ph+11);cx.textAlign='left';
+  }
+  p2TL.forEach(e=>{
+    const x=ml+(e.t/maxT)*pw,y=Math.floor(e.y*ph)+5;
+    cx.strokeStyle=e.col+'60';cx.setLineDash([3,5]);cx.beginPath();cx.moveTo(x,5);cx.lineTo(x,ph);cx.stroke();cx.setLineDash([]);
+    cx.beginPath();cx.arc(x,y,5,0,Math.PI*2);cx.fillStyle=e.col;cx.fill();
+    cx.font='8px "Share Tech Mono"';cx.fillStyle=e.col;
+    const lx=x<cvs.width-130?x+7:x-7;cx.textAlign=x<cvs.width-130?'left':'right';
+    cx.fillText(e.lbl,lx,y-7);cx.textAlign='left';
+  });
+  const leg=[['#ff3355','КРИТИЧНА'],['#ffd700','СЕНСОР'],['#00b4ff','EDGE'],['#c844ff','RELAY'],['#00ffaa','HEAL']];
+  cx.font='7px "Share Tech Mono"';
+  leg.forEach(([c,l],i)=>{cx.fillStyle=c;cx.fillRect(ml+i*82,cvs.height-12,6,6);cx.fillStyle='rgba(120,170,200,.7)';cx.fillText(l,ml+i*82+9,cvs.height-7);});
+}
+
+function lg2(msg,type=''){p2L.unshift({msg,type,ts:ts()});if(p2L.length>25) p2L.pop();document.getElementById('lg2').innerHTML=p2L.map(l=>`<div class="ll ${l.type}">[${l.ts}] ${l.msg}</div>`).join('');}
+function renderEvL(){document.getElementById('evl').innerHTML=p2Ev.map(e=>`<div class="evrow ${e.t}"><div class="evn">${e.n}</div><div class="evd">${e.d}</div></div>`).join('');}
+function p2Loop(){if(!p2Running) return;p2Update();p2DrawMap();p2DrawTL();p2Raf=requestAnimationFrame(p2Loop);}
+
+// ═══ TAB 3 ═══
+const TOPO_DEFS=[
+  {id:0,w:1,col:'#00b4ff',desc:'Базовий: 1 браслет + edge-база. Пряме UWB з\'єднання. RTT мінімальний. Триангуляція неможлива.'},
+  {id:1,w:2,col:'#00ffaa',desc:'Двоточкова: 2 браслети. Relay через сусіда. Часткова трилатерація.'},
+  {id:2,w:3,col:'#ff9900',desc:'Повна: 3 браслети. Trilateration активна. Multi-hop. Self-healing.'},
+];
+let t3=[],t3Ready=false;
+
+function p3Init(){
+  TOPO_DEFS.forEach(tp=>{
+    const cvs=document.getElementById('ct'+tp.id);rsz(cvs);
+    const nodes=[];
+    for(let i=0;i<tp.w;i++){
+      const n=mkNode(i,false,cvs);
+      n.x=cvs.width*.3+rnd(-55,55);n.y=cvs.height*.42+rnd(-45,45)+i*75;
+      n.vx=rnd(-.18,.18);n.vy=rnd(-.18,.18);
+      nodes.push(n);
+    }
+    t3[tp.id]={nodes,time:0,raf:null,trigFl:0};
+    updateTopoInfo(tp.id);t3Anim(tp.id);
+  });t3Ready=true;
+}
+
+function t3Anim(id){
+  if(t3[id]&&t3[id].raf) cancelAnimationFrame(t3[id].raf);
+  const loop=()=>{t3SimUp(id);t3Draw(id);t3[id].raf=requestAnimationFrame(loop);};loop();
+}
+
+function t3SimUp(id){
+  const sim=t3[id];if(!sim) return;
+  const cvs=document.getElementById('ct'+id);sim.time++;
+  sim.nodes.forEach(n=>{
+    n.x+=n.vx;n.y+=n.vy;
+    if(n.x<55||n.x>cvs.width-55) n.vx*=-1;
+    if(n.y<55||n.y>cvs.height-75) n.vy*=-1;
+    n.kr+=(n.kt-n.kr)*.004;n.burst=Math.max(0,n.burst-1.5);n.healFl=Math.max(0,n.healFl-1.2);
+    if(n.state==='critical') n.spo2=Math.max(65,n.spo2-.014);
+    n.txT+=16;if(n.txT>=240){n.txT=0;n.freq=FREQ_BANDS[Math.floor(Math.random()*FREQ_BANDS.length)];}
+    if(sim.time%440===0&&n.state==='active'){n.spo2-=rnd(2,9);if(n.spo2<88){n.state='critical';n.burst=80;}}
+  });
+  sim.trigFl=Math.max(0,sim.trigFl-1.5);updateTopoInfo(id);
+}
+
+function t3Draw(id){
+  const tp=TOPO_DEFS[id],cvs=document.getElementById('ct'+id);rsz(cvs);
+  const cx=cvs.getContext('2d'),sim=t3[id];if(!sim) return;
+  cx.clearRect(0,0,cvs.width,cvs.height);cx.fillStyle='#020912';cx.fillRect(0,0,cvs.width,cvs.height);
+  drawGrid(cx,cvs.width,cvs.height,'#07101c',48);
+  const ex=cvs.width*.85,ey=cvs.height*.5;
+  sim.nodes.filter(n=>n.state!=='offline').forEach(n=>{
+    const rd=d2(n,{x:ex,y:ey})*PX_M,rms=rttMs(rd);
+    cx.beginPath();cx.moveTo(n.x,n.y);cx.lineTo(ex,ey);
+    cx.strokeStyle=n.state==='critical'?'rgba(255,51,85,.35)':'rgba(0,180,255,.3)';cx.lineWidth=1;cx.stroke();
+    cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(60,100,150,.65)';
+    cx.fillText(`${rms.toFixed(4)}ms`,(n.x+ex)/2+2,(n.y+ey)/2-3);
+    cx.fillStyle='rgba(255,215,0,.5)';
+    cx.fillText(`${rd.toFixed(1)}м`,(n.x+ex)/2+2,(n.y+ey)/2+6);
+  });
+  drawLinks(cx,sim.nodes,.2);
+  if(sim.nodes.length>=2){
+    const alive=sim.nodes.filter(n=>n.state!=='offline');
+    if(alive.length>=2){
+      const jx=alive.reduce((s,n)=>s+n.x,0)/alive.length+rnd(-4,4);
+      const jy=alive.reduce((s,n)=>s+n.y,0)/alive.length+rnd(-4,4);
+      cx.beginPath();cx.arc(jx,jy,6,0,Math.PI*2);cx.fillStyle='rgba(255,215,0,.82)';cx.fill();cx.strokeStyle='#ffd700';cx.lineWidth=1;cx.stroke();
+      alive.forEach(n=>{cx.beginPath();cx.moveTo(n.x,n.y);cx.lineTo(jx,jy);cx.strokeStyle='rgba(255,215,0,.14)';cx.setLineDash([2,5]);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);});
+      cx.font='7px "Share Tech Mono"';cx.fillStyle='#ffd700';cx.textAlign='center';
+      cx.fillText(alive.length>=3?'ТРИАНГУЛЯЦІЯ':'ЧАСТКОВИЙ TRI',jx,jy-10);cx.textAlign='left';
+    }
+  }
+  sim.nodes.forEach(n=>drawNode(cx,n,.2));
+  drawEdge(cx,ex,ey);
+  if(sim.trigFl>0){cx.beginPath();cx.arc(ex,ey,sim.trigFl*2,0,Math.PI*2);cx.strokeStyle=`rgba(255,215,0,${sim.trigFl/80*.55})`;cx.lineWidth=2;cx.stroke();}
+}
+
+function updateTopoInfo(id){
+  const sim=t3[id];if(!sim) return;
+  const alive=sim.nodes.filter(n=>n.state!=='offline'),cr=sim.nodes.filter(n=>n.state==='critical').length;
+  const cvs=document.getElementById('ct'+id),ex=cvs.width*.85,ey=cvs.height*.5;
+  const avgRTT=alive.length?rttMs(d2(alive[0],{x:ex,y:ey})*PX_M):0;
+  const avgDist=alive.length?d2(alive[0],{x:ex,y:ey})*PX_M:0;
+  const td=TOPO_DEFS[id];
+  document.getElementById('ti'+id).innerHTML=`
+    <span class="tck">Вузлів: <span class="tcv">${alive.length}/${sim.nodes.length}</span></span>
+    <span class="tck">Критичних: <span class="tcv" style="color:var(--c3)">${cr}</span></span>
+    <span class="tck">RTT: <span class="tcv">${avgRTT.toFixed(4)}ms</span></span>
+    <span class="tck">Дист.: <span class="tcv" style="color:var(--c6)">${avgDist.toFixed(1)}м</span></span>
+    <span class="tck" style="width:100%;margin-top:3px;font-size:.5rem">${td.desc}</span>`;
+}
+
+function p3Trigger(){TOPO_DEFS.forEach(tp=>{const sim=t3[tp.id];if(!sim) return;const ac=sim.nodes.filter(n=>n.state==='active');if(ac.length){const n=ac[Math.floor(Math.random()*ac.length)];n.state='critical';n.spo2=rnd(64,80);n.hr=rnd(138,205);n.burst=90;sim.trigFl=80;}});}
+function p3HealAll(){TOPO_DEFS.forEach(tp=>{const sim=t3[tp.id];if(!sim) return;sim.nodes.forEach(n=>{if(n.state!=='active'){n.state='active';n.spo2=rnd(93,100);n.hr=rnd(62,82);n.priority=0;n.healFl=80;}});});}
+function p3Reset(){TOPO_DEFS.forEach(tp=>{if(t3[tp.id]&&t3[tp.id].raf) cancelAnimationFrame(t3[tp.id].raf);});p3Init();}
+
+// ═══════════════════════════════════════════════════════════════
+//  TAB 4 — COMMUNICATION
+// ═══════════════════════════════════════════════════════════════
+const PRIO_DEFS=[
+  {n:'P5',lbl:'КРИТИЧНЕ',col:'#ff3355',desc:'Поранення / SpO₂<80%\nNEGATIVE HEART RATE\nNегайна евакуація'},
+  {n:'P4',lbl:'ТЕРМІНОВЕ',col:'#ff6644',desc:'SpO₂ 80-88%\nЧСС >130\nПотрібна допомога'},
+  {n:'P3',lbl:'ВАЖЛИВЕ',col:'#ff9900',desc:'Рух/двері/сенсор\nPositional update\nSecurity event'},
+  {n:'P2',lbl:'НОРМАЛЬНЕ',col:'#ffd700',desc:'Heartbeat 500мс\nVitals update\nTopology sync'},
+  {n:'P1',lbl:'ФОНОВЕ',col:'#00b4ff',desc:'Калман поправка\nFreq hopping ACK\nDiagnostics'},
+];
+
+let commMembers=[];
+let commRaf=null,commT=0;
+let pktParticles=[];
+let normFlowT=0,critFlowT=0,hopFlowT=0;
+
+function initComm(){
+  // Init group members
+  commMembers=NAMES.slice(0,6).map((name,i)=>({
+    id:i,name,
+    state:i===0?'danger':'ok',
+    spo2:i===0?rnd(68,78):rnd(92,100),
+    hr:i===0?rnd(148,200):rnd(60,85),
+    dist:rnd(15,120),
+    angle:rnd(0,Math.PI*2),
+    energy:rnd(75,100),
+    sess:sessKey(i),
+    hbArr:Array(12).fill(0).map(()=>rnd(2,14)),
+    lastUpdate:Date.now(),
+  }));
+  buildPrioGrid();
+  if(commRaf) cancelAnimationFrame(commRaf);
+  commLoop();
+}
+
+function buildPrioGrid(){
+  document.getElementById('prioGrid').innerHTML=PRIO_DEFS.map((p,i)=>`
+    <div class="prio-card${i===0?' active-p':''}" style="color:${p.col};border-color:${p.col}44;">
+      <div class="prio-bar" style="background:${p.col}"></div>
+      <div class="prio-n">${p.n}</div>
+      <div class="prio-lbl">${p.lbl}</div>
+      <div class="prio-desc" style="color:${p.col}99;">${p.desc.split('\n').join('<br>')}</div>
+    </div>`).join('');
+}
+
+function commWound(){
+  const ok=commMembers.filter(m=>m.state==='ok'||m.state==='warn');
+  if(!ok.length) return;
+  const m=ok[Math.floor(Math.random()*ok.length)];
+  m.state='danger';m.spo2=rnd(62,78);m.hr=rnd(145,210);
+}
+
+function commHeal(){
+  commMembers.forEach(m=>{m.state='ok';m.spo2=rnd(93,100);m.hr=rnd(60,85);});
+}
+
+function commResetDist(){
+  commMembers.forEach(m=>{m.dist=rnd(15,130);m.angle=rnd(0,Math.PI*2);});
+}
+
+function commUpdate(){
+  commT++;
+  commMembers.forEach(m=>{
+    // drift
+    m.angle+=rnd(-.03,.03);m.dist=Math.max(5,Math.min(140,m.dist+rnd(-.5,.5)));
+    if(m.state==='ok'){m.spo2=Math.min(100,Math.max(92,m.spo2+rnd(-.04,.04)));m.hr=Math.max(55,m.hr+rnd(-.1,.1));}
+    if(m.state==='warn'){m.spo2=Math.min(100,Math.max(80,m.spo2+rnd(-.08,.05)));m.hr=Math.max(100,m.hr+rnd(-.15,.15));}
+    if(m.state==='danger'){m.spo2=Math.max(55,m.spo2-.015);m.hr=Math.min(230,m.hr+.04);}
+    // auto-warn
+    if(m.spo2<88&&m.state==='ok') m.state='warn';
+    if(m.spo2<80&&m.state!=='offline') m.state='danger';
+    // hb update
+    if(commT%8===0){m.hbArr.shift();m.hbArr.push(m.state==='danger'?rnd(10,16):rnd(3,12));}
+  });
+  // Update header
+  const anyDanger=commMembers.some(m=>m.state==='danger');
+  const anyWarn=commMembers.some(m=>m.state==='warn');
+  const hg=document.getElementById('hgrpst');
+  if(anyDanger){hg.textContent='ГРУПА: ПОРАНЕНІ!';hg.style.color='var(--c3)';}
+  else if(anyWarn){hg.textContent='ГРУПА: УВАГА';hg.style.color='var(--c4)';}
+  else{hg.textContent='ГРУПА: НОРМА';hg.style.color='var(--c2)';}
+  // pkt particles
+  if(commT%4===0){
+    const src=commMembers[Math.floor(Math.random()*commMembers.length)];
+    pktParticles.push({x:0,y:0,tx:1,ty:0,t:0,col:src.state==='danger'?'#ff3355':src.state==='warn'?'#ff9900':'#00b4ff',src:src.id});
+  }
+  pktParticles=pktParticles.filter(p=>{p.t+=.025;return p.t<1;});
+}
+
+function commDraw(){
+  drawNormFlow();drawCritFlow();drawHopFlow();drawRadar();drawPktFlow();updateCommSidebar();
+}
+
+// ── Normal flow diagram ──
+function drawNormFlow(){
+  const c=document.getElementById('flowNorm');
+  if(!c) return;
+  const w=c.parentElement.offsetWidth,h=160;
+  c.width=w;c.height=h;
+  const cx=c.getContext('2d');
+  cx.clearRect(0,0,w,h);cx.fillStyle='#020912';cx.fillRect(0,0,w,h);
+  normFlowT+=.02;
+  const nodes=[
+    {x:60,y:80,lbl:'БРАСЛЕТ A',sub:'Sensor+UWB',col:'#00ffaa'},
+    {x:200,y:40,lbl:'БРАСЛЕТ B',sub:'Relay',col:'#00b4ff'},
+    {x:200,y:120,lbl:'БРАСЛЕТ C',sub:'Relay',col:'#00b4ff'},
+    {x:340,y:80,lbl:'EDGE BASE',sub:'Processing',col:'#ff9900'},
+    {x:480,y:80,lbl:'DASHBOARD',sub:'Display',col:'#c844ff'},
+  ];
+  const edges=[[0,1],[0,2],[1,3],[2,3],[3,4]];
+  edges.forEach(([a,b])=>{
+    const na=nodes[a],nb=nodes[b];
+    cx.beginPath();cx.moveTo(na.x,na.y);cx.lineTo(nb.x,nb.y);
+    cx.strokeStyle='rgba(0,180,255,.25)';cx.lineWidth=1.5;cx.stroke();
+    // animated dot
+    const ph=(normFlowT*(a+1)*.7)%1;
+    const dx=nb.x-na.x,dy=nb.y-na.y;
+    cx.beginPath();cx.arc(na.x+dx*ph,na.y+dy*ph,3.5,0,Math.PI*2);
+    cx.fillStyle='#00ffaa';cx.fill();
+    cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(90,136,168,.7)';cx.textAlign='center';
+    cx.fillText('P2',na.x+dx*.5,na.y+dy*.5-6);cx.textAlign='left';
+  });
+  nodes.forEach(n=>{
+    cx.beginPath();cx.arc(n.x,n.y,24,0,Math.PI*2);
+    cx.fillStyle='rgba(6,16,30,.9)';cx.fill();
+    cx.strokeStyle=n.col;cx.lineWidth=1.5;cx.stroke();
+    cx.font='bold 7px "Orbitron"';cx.fillStyle=n.col;cx.textAlign='center';
+    cx.fillText(n.lbl,n.x,n.y);cx.font='6px "Share Tech Mono"';cx.fillStyle='rgba(90,136,168,.8)';
+    cx.fillText(n.sub,n.x,n.y+11);cx.textAlign='left';
+  });
+  cx.font='9px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
+  cx.fillText('НОРМАЛЬНИЙ РЕЖИМ · 500мс HEARTBEAT · AES-128 · FREQ-HOP 3.1-4.9ГГц',12,h-8);
+}
+
+// ── Critical flow diagram ──
+function drawCritFlow(){
+  const c=document.getElementById('flowCrit');if(!c) return;
+  const w=c.parentElement.offsetWidth,h=200;
+  c.width=w;c.height=h;
+  const cx=c.getContext('2d');
+  cx.clearRect(0,0,w,h);cx.fillStyle='#020912';cx.fillRect(0,0,w,h);
+  critFlowT+=.025;
+  const nodes=[
+    {x:60,y:100,lbl:'ПОРАНЕНИЙ',sub:'SpO₂<80%',col:'#ff3355'},
+    {x:200,y:60,lbl:'HOP 1',sub:'Relay P5',col:'#c844ff'},
+    {x:200,y:140,lbl:'HOP 2',sub:'Alt route',col:'#c844ff'},
+    {x:340,y:100,lbl:'EDGE BASE',sub:'Alert!',col:'#ff9900'},
+    {x:480,y:60,lbl:'КОМАНДИР',sub:'Alert',col:'#ffd700'},
+    {x:480,y:140,lbl:'МЕДИК',sub:'Dispatch',col:'#00ffaa'},
+  ];
+  const edges=[[0,1,'#ff3355'],[0,2,'#c844ff'],[1,3,'#c844ff'],[2,3,'#c844ff'],[3,4,'#ff9900'],[3,5,'#00ffaa']];
+  edges.forEach(([a,b,col])=>{
+    const na=nodes[a],nb=nodes[b];
+    cx.beginPath();cx.moveTo(na.x,na.y);cx.lineTo(nb.x,nb.y);
+    cx.strokeStyle=col+'44';cx.lineWidth=2;cx.stroke();
+    const ph=(critFlowT*(a+1)*.9)%1;
+    cx.beginPath();cx.arc(na.x+(nb.x-na.x)*ph,na.y+(nb.y-na.y)*ph,4,0,Math.PI*2);
+    cx.fillStyle=col;cx.fill();
+  });
+  // burst animation on critical node
+  const bn=nodes[0];const br=(critFlowT*40)%30;
+  cx.beginPath();cx.arc(bn.x,bn.y,28+br,0,Math.PI*2);
+  cx.strokeStyle=`rgba(255,51,85,${.4*(1-br/30)})`;cx.lineWidth=2;cx.stroke();
+  nodes.forEach(n=>{
+    cx.beginPath();cx.arc(n.x,n.y,24,0,Math.PI*2);
+    cx.fillStyle=n.col==='#ff3355'?'rgba(255,51,85,.15)':'rgba(6,16,30,.9)';cx.fill();
+    cx.strokeStyle=n.col;cx.lineWidth=n.col==='#ff3355'?2.5:1.5;cx.stroke();
+    cx.font='bold 7px "Orbitron"';cx.fillStyle=n.col;cx.textAlign='center';
+    cx.fillText(n.lbl,n.x,n.y);cx.font='6px "Share Tech Mono"';cx.fillStyle='rgba(90,136,168,.8)';
+    cx.fillText(n.sub,n.x,n.y+11);cx.textAlign='left';
+  });
+  // P5 badge
+  cx.fillStyle='#ff3355';cx.beginPath();cx.arc(nodes[0].x+24,nodes[0].y-24,9,0,Math.PI*2);cx.fill();
+  cx.font='bold 8px "Share Tech Mono"';cx.fillStyle='#fff';cx.textAlign='center';cx.fillText('P5',nodes[0].x+24,nodes[0].y-21);cx.textAlign='left';
+  cx.font='9px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
+  cx.fillText('КРИТИЧНА ПОДІЯ · BURST P5 · MULTI-HOP RELAY · <5мс LATENCY',12,h-8);
+}
+
+// ── Multi-hop diagram ──
+function drawHopFlow(){
+  const c=document.getElementById('flowHop');if(!c) return;
+  const w=c.parentElement.offsetWidth,h=160;
+  c.width=w;c.height=h;
+  const cx=c.getContext('2d');
+  cx.clearRect(0,0,w,h);cx.fillStyle='#020912';cx.fillRect(0,0,w,h);
+  hopFlowT+=.018;
+  const hops=[
+    {x:50,y:80,lbl:'SRC',col:'#ff3355'},
+    {x:w*.28,y:50,lbl:'HOP1',col:'#c844ff'},
+    {x:w*.5,y:110,lbl:'HOP2',col:'#c844ff'},
+    {x:w*.72,y:50,lbl:'HOP3',col:'#c844ff'},
+    {x:w-60,y:80,lbl:'EDGE',col:'#00b4ff'},
+  ];
+  // Draw route lines
+  for(let i=0;i<hops.length-1;i++){
+    const a=hops[i],b=hops[i+1];
+    cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);
+    cx.strokeStyle='rgba(200,68,255,.3)';cx.setLineDash([4,4]);cx.lineWidth=1.5;cx.stroke();cx.setLineDash([]);
+    // Latency label
+    const latMs=(rnd(1,3)).toFixed(1);
+    cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(90,136,168,.65)';cx.textAlign='center';
+    cx.fillText(`~${latMs}мс`,(a.x+b.x)/2,(a.y+b.y)/2-8);cx.textAlign='left';
+  }
+  // Animated packet
+  const segs=hops.length-1;const globalPh=hopFlowT*.4%1;
+  const seg=Math.floor(globalPh*segs),localPh=(globalPh*segs)%1;
+  if(seg<segs){
+    const a=hops[seg],b=hops[seg+1];
+    cx.beginPath();cx.arc(a.x+(b.x-a.x)*localPh,a.y+(b.y-a.y)*localPh,5,0,Math.PI*2);
+    cx.fillStyle='#ff3355';cx.shadowColor='#ff3355';cx.shadowBlur=10;cx.fill();cx.shadowBlur=0;
+  }
+  hops.forEach((n,i)=>{
+    cx.beginPath();cx.arc(n.x,n.y,20,0,Math.PI*2);
+    cx.fillStyle='rgba(6,16,30,.9)';cx.fill();cx.strokeStyle=n.col;cx.lineWidth=1.5;cx.stroke();
+    cx.font='bold 7px "Orbitron"';cx.fillStyle=n.col;cx.textAlign='center';cx.fillText(n.lbl,n.x,n.y+3);
+    if(i>0&&i<hops.length-1){cx.font='6px "Share Tech Mono"';cx.fillStyle='rgba(200,68,255,.7)';cx.fillText('RELAY',n.x,n.y+14);}
+    cx.textAlign='left';
+  });
+  // Total latency
+  cx.font='9px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
+  cx.fillText('MULTI-HOP · DIJKSTRA ROUTING · MAX 3 HOPS · TOTAL LATENCY <15мс',12,h-8);
+}
+
+// ── Packet flow animation ──
+function drawPktFlow(){
+  const c=document.getElementById('pktCanvas');if(!c) return;
+  const w=c.parentElement.offsetWidth,h=90;
+  c.width=w;c.height=h;
+  const cx=c.getContext('2d');
+  cx.clearRect(0,0,w,h);cx.fillStyle='#06101e';cx.fillRect(0,0,w,h);
+  // Draw lanes
+  const laneNames=['P5 CRITICAL','P4 URGENT','P3 SENSOR','P2 HEARTBEAT','P1 DIAG'];
+  const laneCols=['#ff3355','#ff6644','#ff9900','#00b4ff','#253a56'];
+  const lH=h/5;
+  laneNames.forEach((name,i)=>{
+    const y=i*lH;
+    cx.fillStyle=`rgba(${i===0?'255,51,85':i===1?'255,100,68':i===2?'255,153,0':i===3?'0,180,255':'37,58,86'},.05)`;
+    cx.fillRect(0,y,w,lH);
+    cx.font='7px "Share Tech Mono"';cx.fillStyle=laneCols[i];cx.fillText(name,4,y+lH/2+3);
+  });
+  // Draw packets
+  pktParticles.forEach(p=>{
+    const lane=p.src%5,y=lane*lH+lH/2;
+    const x=p.t*w;
+    cx.beginPath();cx.rect(x-6,y-3,12,6);
+    cx.fillStyle=p.col+'cc';cx.fill();cx.strokeStyle=p.col;cx.lineWidth=1;cx.stroke();
+    cx.font='6px "Share Tech Mono"';cx.fillStyle='#fff';cx.textAlign='center';cx.fillText('PKT',x,y+2.5);cx.textAlign='left';
+  });
+}
+
+// ── Radar ──
+function drawRadar(){
+  const c=document.getElementById('radarCanvas');if(!c) return;
+  const pw=c.parentElement.offsetWidth,ph=280;
+  c.width=pw;c.height=ph;
+  const cx=c.getContext('2d');
+  cx.clearRect(0,0,pw,ph);cx.fillStyle='#0a1628';cx.fillRect(0,0,pw,ph);
+  const cx0=pw/2,cy0=ph/2-10,maxR=Math.min(pw/2,ph/2)*0.82;
+  // Radar rings
+  [.25,.5,.75,1].forEach((r,i)=>{
+    const rad=maxR*r;
+    cx.beginPath();cx.arc(cx0,cy0,rad,0,Math.PI*2);
+    cx.strokeStyle='rgba(0,180,255,.1)';cx.lineWidth=1;cx.stroke();
+    const distM=Math.round(UWB_RANGE*r);
+    cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.8)';cx.textAlign='center';
+    cx.fillText(`${distM}м`,cx0,cy0-rad-4);cx.textAlign='left';
+  });
+  // Cross lines
+  cx.strokeStyle='rgba(0,180,255,.08)';cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(cx0-maxR,cy0);cx.lineTo(cx0+maxR,cy0);cx.stroke();
+  cx.beginPath();cx.moveTo(cx0,cy0-maxR);cx.lineTo(cx0,cy0+maxR);cx.stroke();
+  // Sweep animation
+  const sweep=((commT*.01)%(Math.PI*2));
+  const sgrd=cx.createConicalGradient?null:null;
+  cx.save();cx.translate(cx0,cy0);
+  const sweepGrd=cx.createLinearGradient(0,0,Math.cos(sweep)*maxR,Math.sin(sweep)*maxR);
+  sweepGrd.addColorStop(0,'rgba(0,255,170,.18)');sweepGrd.addColorStop(1,'rgba(0,255,170,0)');
+  cx.rotate(sweep);cx.beginPath();cx.moveTo(0,0);cx.arc(0,0,maxR,-0.5,0);cx.fillStyle=sweepGrd;cx.fill();
+  cx.restore();
+  // Members
+  commMembers.forEach((m,i)=>{
+    const r=(m.dist/UWB_RANGE)*maxR;
+    const mx=cx0+Math.cos(m.angle)*r,my=cy0+Math.sin(m.angle)*r;
+    const col=m.state==='danger'?'#ff3355':m.state==='warn'?'#ff9900':m.state==='offline'?'#253a56':'#00ffaa';
+    // Pulse for critical
+    if(m.state==='danger'){
+      const pr=(commT*.04)%1;
+      cx.beginPath();cx.arc(mx,my,(pr*25),0,Math.PI*2);
+      cx.strokeStyle=`rgba(255,51,85,${(1-pr)*.6})`;cx.lineWidth=1.5;cx.stroke();
+    }
+    // Distance circle dashed
+    cx.beginPath();cx.arc(cx0,cy0,r,0,Math.PI*2);
+    cx.strokeStyle=col+'22';cx.setLineDash([2,6]);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);
+    // Line to center
+    cx.beginPath();cx.moveTo(cx0,cy0);cx.lineTo(mx,my);
+    cx.strokeStyle=col+'30';cx.lineWidth=1;cx.stroke();
+    // Dot
+    const dr=m.state==='danger'?10:7;
+    cx.beginPath();cx.arc(mx,my,dr,0,Math.PI*2);
+    const grd=cx.createRadialGradient(mx,my,0,mx,my,dr);
+    grd.addColorStop(0,col);grd.addColorStop(1,col+'44');
+    cx.fillStyle=grd;cx.fill();cx.strokeStyle=col;cx.lineWidth=1.5;cx.stroke();
+    // Label
+    cx.font='bold 8px "Orbitron"';cx.fillStyle=col;cx.textAlign='center';
+    cx.fillText(m.name.slice(0,3),mx,my-dr-4);
+    // Distance text
+    cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(255,215,0,.8)';
+    cx.fillText(`${m.dist.toFixed(0)}м`,mx,my-dr-14);
+    cx.textAlign='left';
+    // SpO2 indicator
+    if(m.state!=='offline'){
+      cx.font='6px "Share Tech Mono"';cx.fillStyle=m.spo2>90?'#00ffaa':m.spo2>80?'#ff9900':'#ff3355';cx.textAlign='center';
+      cx.fillText(`${Math.round(m.spo2)}%`,mx,my+dr+12);cx.textAlign='left';
+    }
+  });
+  // Center - base
+  cx.beginPath();cx.arc(cx0,cy0,16,0,Math.PI*2);
+  cx.fillStyle='rgba(0,180,255,.1)';cx.fill();cx.strokeStyle='#00b4ff';cx.lineWidth=2;cx.stroke();
+  cx.font='bold 7px "Orbitron"';cx.fillStyle='#00b4ff';cx.textAlign='center';cx.fillText('BASE',cx0,cy0+3);cx.textAlign='left';
+  // Labels
+  cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
+  cx.textAlign='center';cx.fillText('UWB ToF ПОЗИЦІОНУВАННЯ · ВІДНОСНІ КООРДИНАТИ · GPS DENIED',pw/2,ph-8);cx.textAlign='left';
+}
+
+function updateCommSidebar(){
+  // Members list
+  const html=commMembers.map(m=>{
+    const col=m.state==='danger'?'var(--c3)':m.state==='warn'?'var(--c4)':m.state==='offline'?'var(--gray)':'var(--c2)';
+    const cls=m.state==='danger'?'danger':m.state==='warn'?'warn':m.state==='offline'?'offline':'ok';
+    const spo2col=m.spo2>90?'#00ffaa':m.spo2>80?'#ff9900':'#ff3355';
+    const hbHtml=m.hbArr.map(v=>`<div class="hb-bar" style="background:${col};height:${v}px;"></div>`).join('');
+    return `<div class="cs-member ${cls}">
+      <div class="cs-avatar" style="color:${col};border-color:${col};">${m.name.slice(0,2).toUpperCase()}</div>
+      <div class="cs-info">
+        <div class="cs-name" style="color:${col}">${m.name} ${m.state==='danger'?'⚠':''}</div>
+        <div class="cs-vitals">
+          <span class="cs-vital" style="color:${spo2col}">SpO₂:${Math.round(m.spo2)}%</span>
+          <span class="cs-vital">ЧСС:${Math.round(m.hr)}</span>
+          <span class="cs-vital">⚡${Math.round(m.energy)}%</span>
+        </div>
+        <div class="hb-mini">${hbHtml}</div>
+      </div>
+      <div class="cs-dist" style="color:${col}">
+        <span class="cs-dist-val">${m.dist.toFixed(0)}</span>
+        <span class="cs-dist-lbl">метрів</span>
+        <span class="sbadge ${cls}" style="margin-top:2px">${m.state==='ok'?'НОРМА':m.state==='warn'?'УВАГА':m.state==='offline'?'OFFLINE':'⚠ КРИТИЧНО'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('csMembers').innerHTML=html;
+
+  // Injury report
+  const injured=commMembers.filter(m=>m.state==='danger'||m.state==='warn');
+  if(injured.length===0){
+    document.getElementById('injuryReport').innerHTML=`<div style="font-family:var(--mono);font-size:.52rem;color:var(--c2);padding:8px 0">✓ Поранених не виявлено</div>`;
+  } else {
+    document.getElementById('injuryReport').innerHTML=injured.map(m=>{
+      const spo2pct=Math.round((m.spo2-50)/50*100);
+      const severity=m.state==='danger'?'КРИТИЧНО':'УВАГА';
+      const sevCol=m.state==='danger'?'#ff3355':'#ff9900';
+      return `<div class="injury-panel">
+        <div class="ip-title" style="color:${sevCol}">⚠ ${m.name} · ${severity}</div>
+        <div class="ip-row">
+          <span class="ip-k">SpO₂</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="ip-v" style="color:${sevCol}">${Math.round(m.spo2)}%</span>
+            <div class="ip-bar-wrap"><div class="ip-bar" style="width:${spo2pct}%;background:${sevCol}"></div></div>
+          </div>
+        </div>
+        <div class="ip-row"><span class="ip-k">ЧСС</span><span class="ip-v" style="color:${sevCol}">${Math.round(m.hr)} уд/хв</span></div>
+        <div class="ip-row"><span class="ip-k">Дистанція</span><span class="ip-v">${m.dist.toFixed(0)} м від BASE</span></div>
+        <div class="ip-row"><span class="ip-k">Пріоритет</span><span class="ip-v" style="color:${sevCol}">${m.state==='danger'?'P5 — НЕГАЙНО':'P4 — ТЕРМІНОВО'}</span></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Mesh routes
+  const routes=commMembers.filter(m=>m.state!=='offline').map((m,i)=>{
+    const hops=m.dist>90?3:m.dist>50?2:1;
+    return `<div style="font-family:var(--mono);font-size:.5rem;margin-bottom:4px;padding:3px 0;border-bottom:1px solid var(--border)">
+      <span style="color:var(--c1)">${m.name.slice(0,3)}</span>
+      <span style="color:var(--gray)"> → ${hops>1?Array(hops-1).fill(0).map((_,i)=>`<span style="color:var(--c5)">HOP${i+1}</span>`).join('→')+'→':''}</span>
+      <span style="color:var(--c4)">EDGE</span>
+      <span style="color:var(--gray);margin-left:6px">${hops} hop · ${(m.dist*PX_M*2/C_LIGHT*1000).toFixed(4)}мс</span>
+    </div>`;
+  }).join('');
+  document.getElementById('meshRoutes').innerHTML=routes;
+
+  // Active sessions
+  document.getElementById('activeSessions').innerHTML=commMembers.filter(m=>m.state!=='offline').map(m=>`${m.sess} · AES:${AES_KEYS[m.id%AES_KEYS.length]}`).join('<br>');
+}
+
+function commLoop(){
+  commUpdate();commDraw();commRaf=requestAnimationFrame(commLoop);
+}
+
+// ═══ TAB 5 TECH SPECS ═══
+let p5Built=false;
+function buildP5(){
+  if(p5Built) return;p5Built=true;
+  const specs=[
+    {t:'НОСИМИЙ ВУЗОЛ',c:'#00b4ff',r:[['MCU','ESP32-WROOM-32'],['RAM/Flash','520KB / 4MB'],['UWB модуль','DWM3000 / DW1000'],['UWB точність','±5–10 см (LOS)'],['UWB дальність','До 200 м'],['Sensor','MAX30102 SpO₂+ЧСС'],['АКБ','LiPo 2000 мАг'],['Автономія','48–72 год'],['Вага','~35 г'],['IP','IP67']]},
+    {t:'EDGE BASE',c:'#00ffaa',r:[['MCU','Raspberry Pi 4 (4ГБ)'],['ОС','RPi OS Lite 64bit'],['Зв\'язок','WiFi 5G / UART bridge'],['Обробка','Python + NumPy + SciPy'],['БД','SQLite (local, offline)'],['UI','FastAPI + WebSocket'],['Живлення','USB-C 5В/3А'],['Захист','AES-256 storage'],['Відображення','Web dashboard'],['Розмір','85×56×17 мм']]},
+    {t:'RF & ЗАХИСТ',c:'#ff9900',r:[['Стандарт','IEEE 802.15.4z (UWB)'],['Діапазон','3.1–4.9 ГГц (hopping)'],['Шифрування','AES-128 CBC'],['Handshake','ECDH + HMAC-SHA256'],['Session keys','Per-burst rotating'],['LPD метод','Burst + spread-spectrum'],['TX потужність','-41.3 dBm/MHz'],['Hopping step','±300 МГц/TX'],['Anti-replay','Timestamp + nonce'],['Overhead','<15% channel use']]},
+    {t:'MESH АЛГОРИТМ',c:'#c844ff',r:[['Тип','Ad-hoc peer-to-peer'],['Протокол','ESP-NOW / LoRa custom'],['Hops','1–3 (configurable)'],['Routing','Dijkstra + fallback'],['Self-healing','<7с відновлення'],['Heartbeat','500 мс interval'],['Timeout','3× HB = offline'],['Retry','3 спроби + ACK'],['Пакет','48–128 байт'],['Latency','<5 мс one-hop']]},
+    {t:'ЛОКАЛІЗАЦІЯ',c:'#ffd700',r:[['Метод','ToF Trilateration'],['Алгоритм','Least Squares (LSQ)'],['Фільтр','Extended Kalman (EKF)'],['Мін. якорів','≥3 вузли'],['Точність','0.5–1.5 м (3 якоря)'],['Оновлення','1–10 Гц'],['ToF шум','±0.1–0.5 м'],['Конвергенція','<30 с'],['GPS','Не потрібний'],['Вимір','distance=(RTT×c)/2']]},
+    {t:'ЕНЕРГІЯ',c:'#ff6688',r:[['Deep sleep','~15 мкА'],['UWB ranging','~100 мА / 50 мс'],['TX event','~170 мА / 15 мс'],['Sensor idle','~0.6 мА'],['Avg 4Hz','~5–8 мА'],['Sleep duty','~94% часу'],['Wake-on','Critical threshold'],['BMS','IP5306 + TP4056'],['Charge','USB-C / wireless'],['LED','RGB статус']]},
+  ];
+  const algos=[
+    {t:'ToF ОБЧИСЛЕННЯ — ВІДСТАНЬ',s:[['1','Вузол A надсилає UWB-імпульс, записує TX timestamp T₁ (нс точність)'],['2','Вузол B отримує імпульс (RX:T₂), обробляє та надсилає відповідь (TX:T₃)'],['3','Вузол A отримує відповідь (RX:T₄). RTT = (T₄−T₁)−(T₃−T₂)'],['4','Відстань: distance = (RTT_ns × c) / (2 × 10⁹) метри'],['5','Шум: d_measured = d_real + Gauss(0, σ), де σ = ±0.1–0.5 м'],['6','Пакет шифрується AES-128 перед TX. HMAC-SHA256 для автентифікації']],
+     code:'# ToF distance computation\nRTT_ns = (T4 - T1) - (T3 - T2)          # double-sided TWR\ndist_m = (RTT_ns * 299_792_458) / 2e9   # distance in meters\ndist_measured = dist_m + gauss(0, noise_sigma)  # add ToF noise'},
+    {t:'ТРИЛАТЕРАЦІЯ (LEAST SQUARES)',s:[['1','Потрібно ≥3 якорних вузли з відомими відносними координатами (x,y)'],['2','Для кожного якоря i: (x−xᵢ)² + (y−yᵢ)² = dᵢ² (виміряна ToF відстань)'],['3','Лінеаризація: 2(xᵢ−xₙ)x + 2(yᵢ−yₙ)y = dₙ²−dᵢ²−xₙ²+xᵢ²−yₙ²+yᵢ²'],['4','Матрична форма: Ax = b → x = (AᵀA)⁻¹Aᵀb (pseudo-inverse)'],['5','Extended Kalman Filter: стан [x,y,vx,vy] → згладжування + прогноз'],['6','Радіус невизначеності σᵣ = f(ToF noise, геометрія, кількість якорів)']],
+     code:'A = 2*np.array([[xi-xn, yi-yn] for xi,yi in anchors_coords[:-1]])\nb = np.array([dn2-di2 + xi2-xn2 + yi2-yn2 for ...])\npos = np.linalg.lstsq(A, b, rcond=None)[0]   # [x_rel, y_rel]'},
+    {t:'SELF-HEALING MESH',s:[['1','Кожен вузол надсилає heartbeat (HB) кожні 500 мс сусідам у межах UWB-дальності'],['2','Timeout: якщо 3× HB не отримано → вузол позначається OFFLINE'],['3','Broadcast topology update: всі вузли отримують оновлену карту мережі'],['4','Routing table оновлюється: Dijkstra або Bellman-Ford, 2–3 hop paths'],['5','Пакети перенаправляються через альтернативні вузли (relay HOP1/HOP2/HOP3)'],['6','Відновлення: вузол повертається → ECDH re-handshake → новий session key → join']],
+     code:'if time_since_hb > 3 * HB_INTERVAL:\n    mark_offline(node_id)\n    broadcast_topology_update(my_routing_table)\n    reroute_via_neighbors(offline_id, max_hops=3)'},
+    {t:'ПРІОРИТЕТНА ЧЕРГА ТА BURST',s:[['1','Кожен пакет отримує мітку пріоритету P1–P5 залежно від типу події'],['2','P5 (CRITICAL): SpO₂<80%, ЧСС>190 → негайний burst без затримки'],['3','P4 (URGENT): SpO₂ 80-88% → черга з низькою затримкою (<50мс)'],['4','P2 (HEARTBEAT): регулярний 500мс beacon для відстеження активності'],['5','Burst mode: серія 3–5 ідентичних пакетів для надійності в шумному середовищі'],['6','Частотний стрибок: кожен TX на новій частоті 3.1–4.9ГГц (anti-jamming)']],
+     code:'# Priority burst transmission\nif vitals.spo2 < 80 or vitals.hr > 190:\n    pkt.priority = 5\n    for _ in range(BURST_COUNT):  # 3-5 repeats\n        freq = random.choice(FREQ_BANDS)  # hop\n        radio.tx(encrypt_aes128(pkt), freq)\n        sleep(BURST_INTERVAL_MS)'},
+  ];
+  const sg=document.getElementById('p5b');
+  sg.innerHTML=specs.map(s=>`
+    <div class="spcard"><div class="spbar" style="background:${s.c}"></div>
+    <div class="sptitle">${s.t}</div>
+    ${s.r.map(([k,v])=>`<div class="sprow"><span class="spk">${k}</span><span class="spv hi">${v}</span></div>`).join('')}
+    </div>`).join('')+
+    algos.map(a=>`
+    <div class="algo-card"><div class="algo-t">⚙ ${a.t}</div>
+    <div class="algo-steps">${a.s.map(([n,t])=>`<div class="algo-s"><span class="algo-n">${n}.</span><span class="algo-tx">${t}</span></div>`).join('')}
+    <div class="algo-code">${a.code}</div></div></div>`).join('');
+}
+
+// ═══ TOPOLOGIES ═══
+function p3Init(){
+  TOPO_DEFS.forEach(tp=>{
+    const cvs=document.getElementById('ct'+tp.id);rsz(cvs);
+    const nodes=[];
+    for(let i=0;i<tp.w;i++){
+      const n=mkNode(i,false,cvs);
+      n.x=cvs.width*.3+rnd(-55,55);n.y=cvs.height*.42+rnd(-45,45)+i*75;
+      n.vx=rnd(-.18,.18);n.vy=rnd(-.18,.18);nodes.push(n);
+    }
+    t3[tp.id]={nodes,time:0,raf:null,trigFl:0};
+    updateTopoInfo(tp.id);t3Anim(tp.id);
+  });t3Ready=true;
+}
+
+function t3Anim(id){
+  if(t3[id]&&t3[id].raf) cancelAnimationFrame(t3[id].raf);
+  const loop=()=>{t3SimUp(id);t3Draw(id);t3[id].raf=requestAnimationFrame(loop);};loop();
+}
+
+// ═══ RESIZE + INIT ═══
+window.addEventListener('resize',()=>{
+  ['c1','c2','crtt','cfrq','ctl','ct0','ct1','ct2','zc'].forEach(id=>{const c=document.getElementById(id);if(c) rsz(c);});
+});
+
+setTimeout(()=>{
+  rsz(document.getElementById('c1'));
+  rsz(document.getElementById('crtt'));
+  rsz(document.getElementById('cfrq'));
+  p1Init();
+},100);
+</script>
+</body>
+</html>
