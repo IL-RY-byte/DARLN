@@ -56,8 +56,8 @@ body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:9999;
   background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;min-height:40px;}
 .ci{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.56rem;color:var(--light);}
 .ci label{color:var(--gray);letter-spacing:.8px;white-space:nowrap;font-size:.52rem;}
-.ci input[type=range]{-webkit-appearance:none;width:62px;height:2px;background:var(--bg3);outline:none;cursor:pointer;}
-.ci input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--c1);cursor:pointer;box-shadow:0 0 6px var(--c1);}
+.ci input[type=range]{-webkit-appearance:none;appearance:none;width:62px;height:2px;background:var(--bg3);outline:none;cursor:pointer;}
+.ci input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:11px;height:11px;border-radius:50%;background:var(--c1);cursor:pointer;box-shadow:0 0 6px var(--c1);}
 .ci span{color:var(--c1);min-width:30px;font-size:.58rem;}
 .csep{width:1px;height:18px;background:var(--border);flex-shrink:0;}
 .cb{font-family:var(--mono);font-size:.54rem;letter-spacing:1px;padding:5px 11px;
@@ -71,7 +71,127 @@ body::after{content:'';pointer-events:none;position:fixed;inset:0;z-index:9999;
 .cbg{background:rgba(0,255,170,.09);color:var(--c2);border:1px solid rgba(0,255,170,.24);}
 .cbn{background:rgba(200,220,255,.04);color:var(--light);border:1px solid rgba(200,220,255,.1);}
 
-/* ── P1 LAYOUT ── */
+/* ── P0 OVERVIEW ── */
+#p0{overflow:hidden;background:var(--bg0);}
+#p0-wrap{height:100%;display:flex;flex-direction:column;}
+#p0-slides{flex:1;overflow:hidden;position:relative;}
+.slide{position:absolute;inset:0;display:flex;align-items:stretch;
+  opacity:0;transform:translateX(60px);transition:opacity .45s cubic-bezier(.22,1,.36,1),transform .45s cubic-bezier(.22,1,.36,1);pointer-events:none;}
+.slide.active{opacity:1;transform:translateX(0);pointer-events:auto;}
+.slide.exit{opacity:0;transform:translateX(-60px);}
+
+/* slide nav */
+#p0-nav{height:44px;background:var(--bg1);border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;padding:0 16px;}
+.p0-dot{width:8px;height:8px;border-radius:50%;background:var(--gray);cursor:pointer;transition:all .22s;border:none;}
+.p0-dot.on{background:var(--c1);width:22px;border-radius:4px;}
+.p0-dot:hover{background:var(--light);}
+.p0-prev,.p0-next{font-family:var(--mono);font-size:.56rem;padding:5px 14px;
+  background:rgba(0,180,255,.07);border:1px solid var(--border2);color:var(--c1);
+  cursor:pointer;border-radius:2px;transition:all .15s;letter-spacing:1px;}
+.p0-prev:hover,.p0-next:hover{background:rgba(0,180,255,.15);}
+.p0-prev:disabled,.p0-next:disabled{opacity:.25;cursor:default;}
+.p0-counter{font-family:var(--mono);font-size:.5rem;color:var(--gray);min-width:48px;text-align:center;}
+
+/* ── SLIDE LAYOUTS ── */
+.sl-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 60px;text-align:center;position:relative;overflow:hidden;}
+.sl-two{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.sl-three{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.sl-full{flex:1;display:flex;flex-direction:column;padding:28px 48px;overflow-y:auto;}
+.sl-full::-webkit-scrollbar{width:4px;}
+.sl-full::-webkit-scrollbar-thumb{background:var(--gray);}
+.sl-left,.sl-right{padding:32px 40px;display:flex;flex-direction:column;justify-content:center;}
+.sl-right{background:var(--bg1);border-left:1px solid var(--border);}
+
+/* hero elements */
+.sl-pretag{font-family:var(--mono);font-size:.55rem;letter-spacing:4px;color:var(--c1);
+  margin-bottom:12px;opacity:.7;}
+.sl-htitle{font-family:var(--orb);font-size:2.8rem;font-weight:900;line-height:1.1;
+  letter-spacing:4px;margin-bottom:16px;}
+.sl-htitle em{color:var(--c1);font-style:normal;}
+.sl-hsub{font-family:var(--raj);font-size:1rem;color:var(--light);line-height:1.7;max-width:600px;margin:0 auto 28px;}
+.sl-hbadges{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:32px;}
+.sl-badge{font-family:var(--mono);font-size:.52rem;padding:5px 12px;border-radius:2px;letter-spacing:1px;}
+.sl-badge.r{background:rgba(255,51,85,.1);border:1px solid rgba(255,51,85,.3);color:var(--c3);}
+.sl-badge.g{background:rgba(0,255,170,.08);border:1px solid rgba(0,255,170,.25);color:var(--c2);}
+.sl-badge.b{background:rgba(0,180,255,.08);border:1px solid rgba(0,180,255,.25);color:var(--c1);}
+.sl-badge.y{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.2);color:var(--c6);}
+.sl-badge.o{background:rgba(255,153,0,.08);border:1px solid rgba(255,153,0,.22);color:var(--c4);}
+.sl-badge.p{background:rgba(200,68,255,.08);border:1px solid rgba(200,68,255,.22);color:var(--c5);}
+
+/* section heading */
+.sl-section{font-family:var(--mono);font-size:.5rem;letter-spacing:4px;color:var(--c1);
+  margin-bottom:6px;opacity:.7;text-transform:uppercase;}
+.sl-title{font-family:var(--orb);font-size:1.5rem;font-weight:700;letter-spacing:2px;
+  margin-bottom:14px;line-height:1.2;}
+.sl-title em{color:var(--c1);font-style:normal;}
+.sl-body{font-family:var(--raj);font-size:.9rem;color:var(--light);line-height:1.75;}
+.sl-body strong{color:var(--white);}
+.sl-body b{color:var(--c4);}
+
+/* stat blocks */
+.sl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;}
+.sl-stat{background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:12px;text-align:center;}
+.sl-stat-n{font-family:var(--orb);font-size:1.6rem;font-weight:900;color:var(--c3);line-height:1;}
+.sl-stat-l{font-family:var(--mono);font-size:.5rem;color:var(--gray);letter-spacing:1.5px;margin-top:4px;}
+
+/* problem cards */
+.prob-cards{display:flex;flex-direction:column;gap:10px;margin-top:18px;}
+.prob-card{background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  padding:12px 14px;display:flex;align-items:flex-start;gap:12px;}
+.prob-icon{font-size:1.4rem;flex-shrink:0;margin-top:2px;}
+.prob-title{font-family:var(--orb);font-size:.6rem;color:var(--c3);letter-spacing:1.5px;margin-bottom:4px;}
+.prob-text{font-family:var(--raj);font-size:.78rem;color:var(--light);line-height:1.55;}
+
+/* solution cards */
+.sol-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px;}
+.sol-card{background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  padding:12px 14px;position:relative;overflow:hidden;}
+.sol-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sol-card.c1::before{background:var(--c1);}
+.sol-card.c2::before{background:var(--c2);}
+.sol-card.c4::before{background:var(--c4);}
+.sol-card.c5::before{background:var(--c5);}
+.sol-card.c6::before{background:var(--c6);}
+.sol-card.c3::before{background:var(--c3);}
+.sol-icon{font-size:1.2rem;margin-bottom:6px;}
+.sol-title{font-family:var(--orb);font-size:.58rem;letter-spacing:1.5px;margin-bottom:5px;}
+.sol-text{font-family:var(--raj);font-size:.75rem;color:var(--light);line-height:1.5;}
+
+/* timeline */
+.timeline{position:relative;margin-top:22px;padding-left:20px;}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--border2);}
+.tl-item{position:relative;margin-bottom:18px;padding-left:20px;}
+.tl-item::before{content:'';position:absolute;left:-5px;top:5px;width:10px;height:10px;
+  border-radius:50%;border:2px solid var(--c1);background:var(--bg0);}
+.tl-item.done::before{background:var(--c2);border-color:var(--c2);}
+.tl-item.active-tl::before{background:var(--c4);border-color:var(--c4);box-shadow:0 0 8px var(--c4);}
+.tl-phase{font-family:var(--orb);font-size:.52rem;color:var(--c1);letter-spacing:2px;margin-bottom:3px;}
+.tl-name{font-family:var(--orb);font-size:.7rem;font-weight:700;margin-bottom:4px;}
+.tl-desc{font-family:var(--raj);font-size:.75rem;color:var(--light);line-height:1.5;}
+
+/* compare table */
+.cmp-table{width:100%;border-collapse:collapse;margin-top:18px;font-family:var(--mono);font-size:.56rem;}
+.cmp-table th{padding:8px 12px;background:var(--bg3);color:var(--gray);letter-spacing:1.5px;
+  text-align:left;border-bottom:1px solid var(--border2);font-weight:normal;}
+.cmp-table td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--light);}
+.cmp-table tr:hover td{background:rgba(255,255,255,.02);}
+.cmp-ok{color:var(--c2);}
+.cmp-no{color:var(--c3);}
+.cmp-part{color:var(--c4);}
+.cmp-darln td:first-child{color:var(--c1);font-weight:700;}
+
+/* hero bg animation */
+.hero-rings{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.hero-ring{position:absolute;border-radius:50%;border:1px solid rgba(0,180,255,.06);
+  animation:hring 8s linear infinite;}
+@keyframes hring{from{transform:rotate(0deg) scale(1)}to{transform:rotate(360deg) scale(1.05)}}
+
+/* scenario vis */
+.sc-vis{background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  position:relative;overflow:hidden;margin-top:16px;}
+#scCanvas{display:block;width:100%;}
 #p1b{flex:1;display:grid;grid-template-columns:1fr 300px;grid-template-rows:1fr 180px;overflow:hidden;}
 #p1m{grid-row:1/2;grid-column:1/2;position:relative;overflow:hidden;}
 #p1s{grid-row:1/3;grid-column:2/3;background:var(--bg1);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
@@ -281,6 +401,59 @@ canvas{display:block;width:100%;height:100%;}
   padding:14px;position:relative;overflow:hidden;}
 .bs-canvas-wrap{width:100%;height:220px;position:relative;}
 
+/* ── NOTIFICATIONS ── */
+#notifStack{position:fixed;top:62px;right:14px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none;width:320px;}
+.notif{background:rgba(4,8,20,.97);border-radius:4px;padding:12px 14px;pointer-events:auto;
+  transform:translateX(340px);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .35s;opacity:0;
+  display:flex;align-items:flex-start;gap:10px;box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.notif.show{transform:translateX(0);opacity:1;}
+.notif.hide{transform:translateX(340px);opacity:0;}
+.notif-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.notif-body{flex:1;min-width:0;}
+.notif-title{font-family:var(--orb);font-size:.6rem;letter-spacing:1.5px;margin-bottom:4px;}
+.notif-msg{font-family:var(--mono);font-size:.52rem;color:var(--light);line-height:1.5;}
+.notif-meta{font-family:var(--mono);font-size:.48rem;color:var(--gray);margin-top:4px;}
+.notif-close{font-size:.65rem;color:var(--gray);cursor:pointer;padding:2px 5px;flex-shrink:0;margin-top:-2px;}
+.notif-close:hover{color:var(--white);}
+.notif.p5{border-left:4px solid #ff3355;}
+.notif.p4{border-left:4px solid #ff9900;}
+.notif.p2{border-left:4px solid #00ffaa;}
+.notif-bar{height:2px;background:rgba(255,255,255,.07);margin-top:6px;border-radius:1px;overflow:hidden;}
+.notif-progress{height:100%;border-radius:1px;transition:width linear;}
+
+/* Injury report card */
+.ir-card{background:rgba(255,51,85,.06);border:1px solid rgba(255,51,85,.2);border-radius:3px;
+  padding:10px 12px;margin-bottom:8px;}
+.ir-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.ir-name{font-family:var(--orb);font-size:.65rem;font-weight:700;color:#ff3355;}
+.ir-severity{font-family:var(--mono);font-size:.48rem;padding:2px 8px;border-radius:10px;}
+.ir-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;
+  padding-bottom:5px;border-bottom:1px solid rgba(255,51,85,.08);}
+.ir-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.ir-k{font-family:var(--mono);font-size:.52rem;color:var(--gray);}
+.ir-v{font-family:var(--mono);font-size:.56rem;}
+.ir-vbar{display:flex;align-items:center;gap:6px;}
+.ir-bar-wrap{width:60px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.ir-bar{height:100%;border-radius:2px;transition:width .6s;}
+
+/* Algo tooltips */
+.algo-step-row{display:flex;gap:8px;align-items:flex-start;position:relative;}
+.algo-step-row:hover .algo-tooltip{opacity:1;pointer-events:auto;transform:translateY(0);}
+.algo-tooltip{position:absolute;left:100%;top:50%;transform:translateY(-50%) translateX(4px);
+  background:rgba(4,8,20,.98);border:1px solid rgba(0,180,255,.3);
+  padding:8px 12px;border-radius:3px;font-family:var(--mono);font-size:.52rem;
+  color:var(--light);line-height:1.6;width:260px;z-index:200;
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  white-space:normal;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+.algo-step-cursor{cursor:help;}
+
+/* Simple explanation box */
+.simple-explain{background:rgba(0,255,170,.04);border:1px solid rgba(0,255,170,.15);
+  border-radius:3px;padding:10px 12px;margin-bottom:12px;}
+.se-title{font-family:var(--orb);font-size:.58rem;color:var(--c2);letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.se-text{font-family:var(--raj);font-size:.72rem;color:var(--light);line-height:1.6;}
+.se-text strong{color:var(--white);}
+
 /* injury overlay */
 .injury-panel{background:rgba(255,51,85,.07);border:1px solid rgba(255,51,85,.25);
   border-radius:3px;padding:10px 12px;margin-top:8px;}
@@ -314,17 +487,295 @@ canvas{display:block;width:100%;height:100%;}
 
 <!-- ── TABS ── -->
 <div id="tbar">
-  <button class="tb on" onclick="sw(0)">📡 СИГНАЛИ</button>
-  <button class="tb" onclick="sw(1)">⚡ СЦЕНАРІЙ</button>
-  <button class="tb" onclick="sw(2)">🗺 ТОПОЛОГІЇ</button>
-  <button class="tb" onclick="sw(3)">📻 ЗБРОЯ ЗВ'ЯЗКУ</button>
-  <button class="tb" onclick="sw(4)">🔧 ТЕХНІЧНИЙ ОПИС</button>
+  <button class="tb on" onclick="sw(0)">🎯 ПРО СИСТЕМУ</button>
+  <button class="tb" onclick="sw(1)">📡 СИГНАЛИ</button>
+  <button class="tb" onclick="sw(2)">⚡ СЦЕНАРІЙ</button>
+  <button class="tb" onclick="sw(3)">🗺 ТОПОЛОГІЇ</button>
+  <button class="tb" onclick="sw(4)">📻 ЗБРОЯ ЗВ'ЯЗКУ</button>
+  <button class="tb" onclick="sw(5)">🔧 ТЕХНІЧНИЙ ОПИС</button>
 </div>
 
 <div id="app">
 
-<!-- ══════════ P1 ══════════ -->
-<div class="pnl on" id="p1">
+<!-- ══════════ P0 OVERVIEW PRESENTATION ══════════ -->
+<div class="pnl on" id="p0">
+<div id="p0-wrap">
+<div id="p0-slides">
+
+<!-- SLIDE 0: HERO -->
+<div class="slide active" id="sl0">
+<div class="sl-hero">
+  <div class="hero-rings">
+    <div class="hero-ring" style="width:600px;height:600px;top:calc(50% - 300px);left:calc(50% - 300px);animation-duration:12s;"></div>
+    <div class="hero-ring" style="width:900px;height:900px;top:calc(50% - 450px);left:calc(50% - 450px);animation-duration:20s;animation-direction:reverse;"></div>
+    <div class="hero-ring" style="width:400px;height:400px;top:calc(50% - 200px);left:calc(50% - 200px);animation-duration:7s;border-color:rgba(0,255,170,.04);"></div>
+  </div>
+  <div class="sl-pretag">DARLN SYSTEM · ПРЕЗЕНТАЦІЯ</div>
+  <div class="sl-htitle">DAR<em>LN</em></div>
+  <div style="font-family:var(--mono);font-size:.65rem;color:var(--gray);letter-spacing:3px;margin-bottom:20px;">Distributed Autonomous Relative Life-saving Network</div>
+  <div class="sl-hsub">
+    Тактична система моніторингу бійців у реальному часі.<br>
+    Працює <strong style="color:var(--white)">без GPS, без інтернету, без серверів</strong> — тільки браслети та радіосигнал.
+  </div>
+  <div class="sl-hbadges">
+    <span class="sl-badge r">GPS DENIED</span>
+    <span class="sl-badge g">SELF-HEALING MESH</span>
+    <span class="sl-badge b">UWB ToF POSITIONING</span>
+    <span class="sl-badge y">AES-128 ENCRYPT</span>
+    <span class="sl-badge o">SpO₂ + ЧСС МОНІТОРИНГ</span>
+    <span class="sl-badge p">MULTI-HOP RELAY</span>
+  </div>
+  <div style="font-family:var(--mono);font-size:.52rem;color:var(--gray);letter-spacing:2px;animation:pb 2s infinite">▼ НАТИСНІТЬ "ДАЛІ" ДЛЯ ПЕРЕГЛЯДУ</div>
+</div>
+</div>
+
+<!-- SLIDE 1: ПРОБЛЕМА -->
+<div class="slide" id="sl1">
+<div class="sl-two">
+<div class="sl-left">
+  <div class="sl-section">01 / ПРОБЛЕМА</div>
+  <div class="sl-title">Командир не знає<br>де боєць і <em>чи живий</em></div>
+  <div class="sl-body">
+    У сучасному бою підрозділ діє в умовах повного <strong>радіомовчання та GPS-глушіння</strong>. Командир бачить тільки тих, хто відповідає на зв'язок. Поранений боєць часто не може повідомити про себе.
+    <br><br>
+    Кожна хвилина затримки медичної допомоги при важкому пораненні <b>критично зменшує шанси виживання</b>.
+  </div>
+  <div class="sl-stats">
+    <div class="sl-stat"><div class="sl-stat-n" style="color:var(--c3)">47%</div><div class="sl-stat-l">БОЙОВИХ ВТРАТ МОЖНА УНИКНУТИ</div></div>
+    <div class="sl-stat"><div class="sl-stat-n" style="color:var(--c4)">3–5хв</div><div class="sl-stat-l">КРИТИЧНИЙ ЧАСОВИЙ ВІКНО</div></div>
+    <div class="sl-stat"><div class="sl-stat-n" style="color:var(--c6)">0</div><div class="sl-stat-l">GPS СИГНАЛ В УКРИТТІ</div></div>
+  </div>
+</div>
+<div class="sl-right">
+  <div class="sl-section">КОНКРЕТНІ ВИКЛИКИ</div>
+  <div class="prob-cards">
+    <div class="prob-card">
+      <div class="prob-icon">📡</div>
+      <div><div class="prob-title">GPS ЗАГЛУШЕНО</div><div class="prob-text">Ворог використовує засоби РЕБ. Стандартні координатні системи не працюють в підвалах, тунелях, щільній забудові.</div></div>
+    </div>
+    <div class="prob-card">
+      <div class="prob-icon">🔇</div>
+      <div><div class="prob-title">РАДІОМОВЧАННЯ</div><div class="prob-text">Активний голосовий зв'язок демаскує позицію. Боєць у критичному стані фізично не може вийти на зв'язок.</div></div>
+    </div>
+    <div class="prob-card">
+      <div class="prob-icon">🩸</div>
+      <div><div class="prob-title">ПОРАНЕНИЙ НЕ МОЖЕ ПОВІДОМИТИ</div><div class="prob-text">Втрата свідомості, шок — боєць не здатний передати своє місцезнаходження та стан. Командир дізнається занадто пізно.</div></div>
+    </div>
+    <div class="prob-card">
+      <div class="prob-icon">🌫</div>
+      <div><div class="prob-title">ВІДСУТНІСТЬ КАРТИНИ БОЮ</div><div class="prob-text">Командир не бачить розташування своїх бійців у реальному часі. Рішення приймаються "наосліп".</div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 2: АКТУАЛЬНІСТЬ -->
+<div class="slide" id="sl2">
+<div class="sl-full">
+  <div class="sl-section">02 / АКТУАЛЬНІСТЬ</div>
+  <div class="sl-title">Чому <em>зараз</em> і чому <em>це</em> важливо</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:8px;">
+    <div>
+      <div style="font-family:var(--orb);font-size:.58rem;color:var(--c4);letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;">ТАКТИЧНА РЕАЛЬНІСТЬ 2024</div>
+      <div class="sl-body" style="font-size:.78rem;">
+        <strong>Повномасштабна війна</strong> показала: підрозділи діють в умовах постійного радіоелектронного придушення. Стандартні засоби зв'язку і навігації ненадійні.<br><br>
+        <b>Загибель від затримки евакуації</b> — одна з провідних причин бойових втрат, яких можна уникнути при своєчасній медичній допомозі.
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--orb);font-size:.58rem;color:var(--c2);letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;">ТЕХНОЛОГІЧНА ГОТОВНІСТЬ</div>
+      <div class="sl-body" style="font-size:.78rem;">
+        Сьогодні вперше доступні <strong>компактні UWB-чіпи</strong> (DW3000) з точністю ±5см та ціною $8. Такі самі використовують iPhone для просторового позиціонування.<br><br>
+        <b>ESP32 + MAX30102</b> — повний стек моніторингу вміщується в корпус браслету вагою 35г.
+      </div>
+    </div>
+    <div>
+      <div style="font-family:var(--orb);font-size:.58rem;color:var(--c1);letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;">ПОРІВНЯННЯ З АНАЛОГАМИ</div>
+      <div class="sl-body" style="font-size:.78rem;">
+        Існуючі системи (<strong>Situational Awareness</strong>, ATAK) потребують смартфонів, інтернету або дорогих супутникових каналів. Вони не працюють в умовах глушіння.<br><br>
+        <b>DARLN</b> — перша система яка не потребує жодної зовнішньої інфраструктури.
+      </div>
+    </div>
+  </div>
+  <table class="cmp-table" style="margin-top:20px;">
+    <tr><th>СИСТЕМА</th><th>GPS DENIED</th><th>БЕЗ ІНТЕРНЕТУ</th><th>МОНІТОРИНГ СТАНУ</th><th>SELF-HEALING</th><th>ЦІНА НА БІЙЦЯ</th></tr>
+    <tr><td>ATAK / Android</td><td class="cmp-no">✗ Потрібен GPS</td><td class="cmp-no">✗ Потрібен 4G</td><td class="cmp-no">✗ Немає</td><td class="cmp-no">✗</td><td class="cmp-part">$800+</td></tr>
+    <tr><td>Garmin inReach</td><td class="cmp-no">✗ Супутник</td><td class="cmp-ok">✓</td><td class="cmp-no">✗</td><td class="cmp-no">✗</td><td class="cmp-part">$350+</td></tr>
+    <tr><td>Harris ASELSAN</td><td class="cmp-part">~ Частково</td><td class="cmp-ok">✓</td><td class="cmp-no">✗</td><td class="cmp-no">✗</td><td class="cmp-no">$5000+</td></tr>
+    <tr class="cmp-darln"><td>⚡ DARLN</td><td class="cmp-ok">✓ UWB ToF</td><td class="cmp-ok">✓ Повністю</td><td class="cmp-ok">✓ SpO₂+ЧСС</td><td class="cmp-ok">✓ &lt;7с</td><td class="cmp-ok">~$45</td></tr>
+  </table>
+</div>
+</div>
+
+<!-- SLIDE 3: РІШЕННЯ -->
+<div class="slide" id="sl3">
+<div class="sl-two">
+<div class="sl-left">
+  <div class="sl-section">03 / РІШЕННЯ</div>
+  <div class="sl-title">Браслет що <em>сам</em><br>повідомить за бійця</div>
+  <div class="sl-body">
+    DARLN — це <strong>мережа носимих браслетів</strong> які постійно вимірюють стан бійця (кисень, пульс) та відстань між собою через UWB-радіо.<br><br>
+    При критичних показниках браслет <b>автоматично</b> відправляє зашифрований сигнал тривоги через сусідів до командного вузла — навіть якщо боєць непритомний.
+  </div>
+  <div class="sol-cards" style="margin-top:16px;">
+    <div class="sol-card c1"><div class="sol-icon">📡</div><div class="sol-title" style="color:var(--c1)">UWB ПОЗИЦІОНУВАННЯ</div><div class="sol-text">Відстань між бійцями ±10см. Без GPS, через стіни.</div></div>
+    <div class="sol-card c3"><div class="sol-icon">🚨</div><div class="sol-title" style="color:var(--c3)">АВТО-ТРИВОГА P5</div><div class="sol-text">SpO₂ впав — браслет сам кричить "ДОПОМОЖІТЬ".</div></div>
+    <div class="sol-card c2"><div class="sol-icon">🔄</div><div class="sol-title" style="color:var(--c2)">САМОВІДНОВЛЕННЯ</div><div class="sol-text">Загинув вузол — мережа перебудувалась за 7 секунд.</div></div>
+    <div class="sol-card c5"><div class="sol-icon">🔒</div><div class="sol-title" style="color:var(--c5)">AES-128 ЗАХИСТ</div><div class="sol-text">Ворог перехопить — нічого не прочитає.</div></div>
+    <div class="sol-card c4"><div class="sol-icon">⚡</div><div class="sol-title" style="color:var(--c4)">72 ГОДИНИ</div><div class="sol-text">Автономність без зарядки. Режим сну 94% часу.</div></div>
+    <div class="sol-card c6"><div class="sol-icon">💰</div><div class="sol-title" style="color:var(--c6)">~$45 НА БІЙЦЯ</div><div class="sol-text">Доступна ціна. Компоненти в наявності.</div></div>
+  </div>
+</div>
+<div class="sl-right" style="padding:28px 32px;align-items:center;justify-content:center;display:flex;flex-direction:column;">
+  <div class="sl-section" style="text-align:center">ЯК ЦЕ ВИГЛЯДАЄ В ДІЇ</div>
+  <div class="sc-vis" style="width:100%;max-width:380px;">
+    <canvas id="scCanvas" height="340"></canvas>
+  </div>
+  <div style="font-family:var(--mono);font-size:.5rem;color:var(--gray);text-align:center;margin-top:8px;letter-spacing:1px;">
+    АНІМАЦІЯ: БРАСЛЕТИ → MESH → EDGE BASE → КОМАНДИР
+  </div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 4: ЯК ПРАЦЮЄ -->
+<div class="slide" id="sl4">
+<div class="sl-full">
+  <div class="sl-section">04 / ЯК ПРАЦЮЄ</div>
+  <div class="sl-title">Від браслету до <em>командира</em> за мілісекунди</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:12px;">
+    <div>
+      <div style="font-family:var(--orb);font-size:.58rem;color:var(--c4);letter-spacing:2px;margin-bottom:12px;">НОРМАЛЬНИЙ РЕЖИМ · 24/7</div>
+      <div class="prob-card" style="margin-bottom:8px;"><div class="prob-icon" style="font-size:1rem">1️⃣</div><div><div class="prob-title" style="color:var(--c2)">ВИМІРЮВАННЯ</div><div class="prob-text">Кожні 250мс браслет вимірює SpO₂, пульс і відстань до сусідів через UWB-радіо (як луна — відправив сигнал, виміряв час повернення).</div></div></div>
+      <div class="prob-card" style="margin-bottom:8px;"><div class="prob-icon" style="font-size:1rem">2️⃣</div><div><div class="prob-title" style="color:var(--c2)">HEARTBEAT</div><div class="prob-text">Кожні 500мс: мікропакет "я живий, мої координати XY, стан OK" — зашифрований, передається через сусідів до командного вузла.</div></div></div>
+      <div class="prob-card"><div class="prob-icon" style="font-size:1rem">3️⃣</div><div><div class="prob-title" style="color:var(--c2)">КАРТА В РЕАЛЬНОМУ ЧАСІ</div><div class="prob-text">Командир бачить всіх бійців на карті: зелений — норма, жовтий — потрібна увага, червоний — критично.</div></div></div>
+    </div>
+    <div>
+      <div style="font-family:var(--orb);font-size:.58rem;color:var(--c3);letter-spacing:2px;margin-bottom:12px;">КРИТИЧНА ПОДІЯ · АВТОМАТИЧНО</div>
+      <div class="prob-card" style="margin-bottom:8px;border-left:3px solid var(--c3);"><div class="prob-icon" style="font-size:1rem">🚨</div><div><div class="prob-title" style="color:var(--c3)">БРАСЛЕТ ВИЯВИВ ПОРАНЕННЯ</div><div class="prob-text">SpO₂ &lt;80% або ЧСС &gt;190 → браслет миттєво перемикається в режим BURST P5: відправляє 5 зашифрованих пакетів тривоги на різних частотах.</div></div></div>
+      <div class="prob-card" style="margin-bottom:8px;border-left:3px solid var(--c5);"><div class="prob-icon" style="font-size:1rem">🔀</div><div><div class="prob-title" style="color:var(--c5)">MULTI-HOP RELAY</div><div class="prob-text">Якщо прямий зв'язок недоступний — сигнал "стрибає" через сусідів (до 3 хопів). Як естафета: A→B→C→EDGE.</div></div></div>
+      <div class="prob-card" style="border-left:3px solid var(--c4);"><div class="prob-icon" style="font-size:1rem">📢</div><div><div class="prob-title" style="color:var(--c4)">КОМАНДИР ОТРИМУЄ ЗВІТ</div><div class="prob-text">За &lt;5мс: "Браво поранений. SpO₂ 72%. Відстань 43м від вас. Маршрут: через Чарлі." Повний автоматично.</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SLIDE 5: РЕАЛІЗАЦІЯ -->
+<div class="slide" id="sl5">
+<div class="sl-two">
+<div class="sl-left">
+  <div class="sl-section">05 / РЕАЛІЗАЦІЯ</div>
+  <div class="sl-title">Що входить<br>до <em>системи</em></div>
+  <div class="sl-body" style="margin-bottom:16px;">
+    Три компоненти що разом утворюють повністю автономну тактичну мережу:
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    <div style="background:var(--bg2);border:1px solid rgba(0,180,255,.3);border-radius:3px;padding:14px;">
+      <div style="font-family:var(--orb);font-size:.62rem;color:var(--c1);letter-spacing:2px;margin-bottom:6px;">⌚ БРАСЛЕТ (НОСИМИЙ ВУЗОЛ)</div>
+      <div style="font-family:var(--raj);font-size:.78rem;color:var(--light);line-height:1.6;">ESP32 + UWB DWM3000 + MAX30102 (SpO₂+ЧСС) + LiPo 2000мАг + IP67<br><span style="color:var(--c6);font-family:var(--mono);font-size:.55rem;">~$45 · 35г · 72год автономності</span></div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(0,255,170,.3);border-radius:3px;padding:14px;">
+      <div style="font-family:var(--orb);font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:6px;">📦 EDGE BASE (КОМАНДНИЙ ВУЗОЛ)</div>
+      <div style="font-family:var(--raj);font-size:.78rem;color:var(--light);line-height:1.6;">Raspberry Pi 4 + UWB міст + FastAPI веб-дашборд + SQLite + WiFi<br><span style="color:var(--c6);font-family:var(--mono);font-size:.55rem;">~$120 · розмір сигаретної пачки · живлення від повербанку</span></div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(200,68,255,.3);border-radius:3px;padding:14px;">
+      <div style="font-family:var(--orb);font-size:.62rem;color:var(--c5);letter-spacing:2px;margin-bottom:6px;">💻 ПРОГРАМНЕ ЗАБЕЗПЕЧЕННЯ</div>
+      <div style="font-family:var(--raj);font-size:.78rem;color:var(--light);line-height:1.6;">Прошивка ESP32 (C/Arduino) + Python бекенд (триангуляція, Kalman) + React веб-інтерфейс<br><span style="color:var(--c6);font-family:var(--mono);font-size:.55rem;">Open-source · офлайн · без хмари</span></div>
+    </div>
+  </div>
+</div>
+<div class="sl-right">
+  <div class="sl-section">ПЛАН РОЗРОБКИ</div>
+  <div class="timeline">
+    <div class="tl-item done">
+      <div class="tl-phase">ФАЗА 1 · ЗАВЕРШЕНО</div>
+      <div class="tl-name">Прототип та симуляція</div>
+      <div class="tl-desc">UWB ToF вимірювання, mesh-алгоритм, AES-128 шифрування, веб-симулятор (цей додаток)</div>
+    </div>
+    <div class="tl-item active-tl">
+      <div class="tl-phase">ФАЗА 2 · В ПРОЦЕСІ</div>
+      <div class="tl-name">Апаратний прототип</div>
+      <div class="tl-desc">Збірка 3 браслетів, тестування ToF в реальних умовах, інтеграція MAX30102, розробка корпусу</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-phase">ФАЗА 3 · НАСТУПНА</div>
+      <div class="tl-name">Польові випробування</div>
+      <div class="tl-desc">Тест в умовах РЕБ-глушіння, реальна точність позиціонування, тест автономності</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-phase">ФАЗА 4 · ЦІЛЬ</div>
+      <div class="tl-name">Серійна версія</div>
+      <div class="tl-desc">Сертифікований IP67-корпус, власна PCB, масштабування до рівня взводу (10+ вузлів)</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- SLIDE 6: ДЕМО -->
+<div class="slide" id="sl6">
+<div class="sl-hero">
+  <div class="hero-rings">
+    <div class="hero-ring" style="width:500px;height:500px;top:calc(50% - 250px);left:calc(50% - 250px);animation-duration:10s;border-color:rgba(0,255,170,.07);"></div>
+    <div class="hero-ring" style="width:800px;height:800px;top:calc(50% - 400px);left:calc(50% - 400px);animation-duration:18s;animation-direction:reverse;border-color:rgba(255,51,85,.04);"></div>
+  </div>
+  <div class="sl-pretag">06 / ІНТЕРАКТИВНА ДЕМОНСТРАЦІЯ</div>
+  <div class="sl-htitle" style="font-size:1.9rem;">Побачте систему<br><em>в дії</em></div>
+  <div class="sl-hsub" style="margin-bottom:20px;">
+    Всі наступні вкладки — живі симуляції реальних алгоритмів.<br>Ніякого відео, ніяких слайдів — тільки справжній код що працює прямо зараз.
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:700px;margin:0 auto 28px;">
+    <div onclick="sw(1)" style="background:var(--bg2);border:1px solid var(--border2);border-radius:3px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(0,180,255,.1)'" onmouseout="this.style.background='var(--bg2)'">
+      <div style="font-size:1.4rem;margin-bottom:6px;">📡</div>
+      <div style="font-family:var(--orb);font-size:.48rem;color:var(--c1);letter-spacing:1px;">СИГНАЛИ</div>
+      <div style="font-family:var(--mono);font-size:.44rem;color:var(--gray);margin-top:3px;">ToF · Mesh · RTT</div>
+    </div>
+    <div onclick="sw(2)" style="background:var(--bg2);border:1px solid rgba(255,51,85,.2);border-radius:3px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,51,85,.08)'" onmouseout="this.style.background='var(--bg2)'">
+      <div style="font-size:1.4rem;margin-bottom:6px;">⚡</div>
+      <div style="font-family:var(--orb);font-size:.48rem;color:var(--c3);letter-spacing:1px;">СЦЕНАРІЙ</div>
+      <div style="font-family:var(--mono);font-size:.44rem;color:var(--gray);margin-top:3px;">Поранення · Евак</div>
+    </div>
+    <div onclick="sw(3)" style="background:var(--bg2);border:1px solid rgba(255,153,0,.2);border-radius:3px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,153,0,.08)'" onmouseout="this.style.background='var(--bg2)'">
+      <div style="font-size:1.4rem;margin-bottom:6px;">🗺</div>
+      <div style="font-family:var(--orb);font-size:.48rem;color:var(--c4);letter-spacing:1px;">ТОПОЛОГІЇ</div>
+      <div style="font-family:var(--mono);font-size:.44rem;color:var(--gray);margin-top:3px;">1/2/3 браслети</div>
+    </div>
+    <div onclick="sw(4)" style="background:var(--bg2);border:1px solid rgba(200,68,255,.2);border-radius:3px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(200,68,255,.08)'" onmouseout="this.style.background='var(--bg2)'">
+      <div style="font-size:1.4rem;margin-bottom:6px;">📻</div>
+      <div style="font-family:var(--orb);font-size:.48rem;color:var(--c5);letter-spacing:1px;">ЗВ'ЯЗОК</div>
+      <div style="font-family:var(--mono);font-size:.44rem;color:var(--gray);margin-top:3px;">Радар · Група</div>
+    </div>
+    <div onclick="sw(5)" style="background:var(--bg2);border:1px solid rgba(255,215,0,.2);border-radius:3px;padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;" onmouseover="this.style.background='rgba(255,215,0,.08)'" onmouseout="this.style.background='var(--bg2)'">
+      <div style="font-size:1.4rem;margin-bottom:6px;">🔧</div>
+      <div style="font-family:var(--orb);font-size:.48rem;color:var(--c6);letter-spacing:1px;">ТЕХНОЛОГІЇ</div>
+      <div style="font-family:var(--mono);font-size:.44rem;color:var(--gray);margin-top:3px;">Алгоритми · ТТХ</div>
+    </div>
+  </div>
+  <div style="font-family:var(--mono);font-size:.52rem;color:var(--gray);">← клікніть вкладку або картку щоб перейти до демо →</div>
+</div>
+</div>
+
+</div><!-- #p0-slides -->
+
+<!-- NAV -->
+<div id="p0-nav">
+  <button class="p0-prev" onclick="p0Prev()" id="p0prev" disabled>◀ НАЗАД</button>
+  <div style="display:flex;gap:6px;align-items:center;">
+    <button class="p0-dot on" onclick="p0Go(0)"></button>
+    <button class="p0-dot" onclick="p0Go(1)"></button>
+    <button class="p0-dot" onclick="p0Go(2)"></button>
+    <button class="p0-dot" onclick="p0Go(3)"></button>
+    <button class="p0-dot" onclick="p0Go(4)"></button>
+    <button class="p0-dot" onclick="p0Go(5)"></button>
+    <button class="p0-dot" onclick="p0Go(6)"></button>
+  </div>
+  <div class="p0-counter" id="p0cnt">1 / 7</div>
+  <button class="p0-next" onclick="p0Next()" id="p0next">ДАЛІ ▶</button>
+</div>
+</div><!-- #p0-wrap -->
+</div><!-- #p0 -->
+<div class="pnl" id="p1">
 <div class="cfgbar">
   <div class="ci"><label>ВУЗЛИ</label><input type="range" id="cn" min="3" max="10" value="7" oninput="uc()"><span id="lcn">7</span></div>
   <div class="csep"></div>
@@ -509,6 +960,7 @@ canvas{display:block;width:100%;height:100%;}
 </div><!-- #app -->
 
 <div id="tip"></div>
+<div id="notifStack"></div>
 <div id="zov" onclick="zoomClose()"><canvas id="zc"></canvas></div>
 
 <script>
@@ -537,11 +989,11 @@ function sw(i){
   document.querySelectorAll('.tb').forEach((b,j)=>b.classList.toggle('on',j===i));
   document.querySelectorAll('.pnl').forEach((p,j)=>p.classList.toggle('on',j===i));
   aTab=i;
-  if(i===0&&!p1Running) setTimeout(p1Init,60);
-  if(i===1&&!p2Done) setTimeout(p2Reset,60);
-  if(i===2) setTimeout(p3Init,60);
-  if(i===3) setTimeout(initComm,60);
-  if(i===4) buildP5();
+  if(i===1&&!p1Running) setTimeout(p1Init,60);
+  if(i===2&&!p2Done) setTimeout(p2Reset,60);
+  if(i===3) setTimeout(p3Init,60);
+  if(i===4) setTimeout(initComm,60);
+  if(i===5) buildP5();
 }
 
 function rsz(c){
@@ -739,7 +1191,7 @@ function p1Init(){
   const cvs=document.getElementById('c1');rsz(cvs);
   p1N=[];
   for(let i=0;i<cfg.n;i++) p1N.push(mkNode(i,i<3,cvs));
-  p1Logs=[];p1Pkt=0;RTTH.length=0;FRQH.length=0;p1T=0;p1Running=true;p1Paused=false;
+  p1Logs=[];p1Pkt=0;RTTH.length=0;FRQH.length=0;p1T=0;p1Running=true;p1Paused=false;notifiedIds.clear();
   document.getElementById('ppb').textContent='⏸ ПАУЗА';
   lg1('Систему ініціалізовано — '+cfg.n+' вузлів активні','s');
   lg1('UWB ToF · AES-128 · GPS DENIED · Freq-hop 3.1–4.9G','i');
@@ -778,6 +1230,14 @@ function p1Event(){
   const alive=p1N.filter(n=>n.state==='active');if(!alive.length) return;
   const n=alive[Math.floor(Math.random()*alive.length)];
   n.state='critical';n.spo2=rnd(62,78);n.hr=rnd(140,205);n.priority=5;n.burst=90;
+  notifiedIds.add(n.id);
+  const rd=d2(n,{x:42,y:42})*PX_M;
+  showNotif({
+    title:`🚨 ПОРАНЕНО: ${n.name.toUpperCase()}`,
+    msg:`SpO₂ <strong style="color:#ff3355">${Math.round(n.spo2)}%</strong> · ЧСС <strong>${Math.round(n.hr)}</strong> уд/хв<br>КРИТИЧНИЙ СТАН · Негайна допомога!`,
+    meta:`Дистанція: ${rd.toFixed(1)}м · Пріоритет P5 · ${n.aes}`,
+    type:'p5',icon:'🚨',duration:9000
+  });
   lg1(`⚠ ПОРАНЕННЯ: ${n.name} — SpO₂ ${Math.round(n.spo2)}% ЧСС ${Math.round(n.hr)}`,'e');
   lg1(`BURST P5: ${n.name}→edge · ${n.aes} · ${n.sess}`,'w');
   getNeighbors(n,p1N).slice(0,2).forEach((nb,i)=>{
@@ -816,7 +1276,9 @@ function p1Update(){
   });
   if(p1T%390===0){
     const ac=p1N.filter(n=>n.state==='active');
-    if(ac.length>1){const n=ac[Math.floor(Math.random()*ac.length)];n.spo2-=rnd(2,10);if(n.spo2<88){n.state='critical';n.priority=5;n.burst=80;lg1(`AUTO: ${n.name} SpO₂ ${Math.round(n.spo2)}%`,'e');}}
+    if(ac.length>1){const n=ac[Math.floor(Math.random()*ac.length)];n.spo2-=rnd(2,10);if(n.spo2<88){n.state='critical';n.priority=5;n.burst=80;lg1(`AUTO: ${n.name} SpO₂ ${Math.round(n.spo2)}%`,'e');
+      if(!notifiedIds.has(n.id)){notifiedIds.add(n.id);const rd=d2(n,{x:42,y:42})*PX_M;showNotif({title:`⚠ ТРИВОГА: ${n.name}`,msg:`Браслет зафіксував критичний спад SpO₂<br>Рівень: <strong style="color:#ff3355">${Math.round(n.spo2)}%</strong> · ЧСС ${Math.round(n.hr)} уд/хв`,meta:`Дист: ${rd.toFixed(1)}м · Автоматична тривога · P5 BURST`,type:'p5',icon:'⚠',duration:8000});}
+    }}
   }
 }
 
@@ -826,17 +1288,7 @@ function p1Draw(){
   cx.clearRect(0,0,cvs.width,cvs.height);cx.fillStyle='#020912';cx.fillRect(0,0,cvs.width,cvs.height);
   drawGrid(cx,cvs.width,cvs.height);
   drawLinks(cx,p1N,cfg.ns);
-  const anchors=p1N.filter(n=>n.state!=='offline'&&n.anchor);
-  p1N.filter(n=>n.state!=='offline'&&!n.anchor).forEach(t=>{
-    const pt=triPoint(t,anchors);
-    if(pt){
-      cx.beginPath();cx.arc(pt.x,pt.y,6,0,Math.PI*2);cx.fillStyle='rgba(255,215,0,.8)';cx.fill();
-      cx.strokeStyle='#ffd700';cx.lineWidth=1.2;cx.stroke();
-      cx.font='7px "Share Tech Mono"';cx.fillStyle='#ffd700';cx.fillText('▲TRI',pt.x+8,pt.y+3);
-      cx.beginPath();cx.moveTo(t.x,t.y);cx.lineTo(pt.x,pt.y);
-      cx.strokeStyle='rgba(255,215,0,.18)';cx.setLineDash([2,5]);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);
-    }
-  });
+  // Trilateration: only show subtle accuracy radius, no yellow dots
   p1N.filter(n=>n.state==='critical').forEach(n=>{
     const path=buildPath(n,p1N,cfg.hp);
     if(path.length>1){
@@ -1016,6 +1468,7 @@ function p2Shell(){
     const rd=d2(n,{x:42,y:42})*PX_M,rms=rttMs(rd);
     n.lastRTT=rms;n.lastMeas=tofMeas(rd,t2cfg.ns);n.lastReal=rd;
     setTimeout(()=>{lg2(`BURST P5: ${n.name}→edge | RTT:${rms.toFixed(5)}ms`,'e');p2TL.push({t:Date.now()-t0,lbl:`${n.name}:BURST P5`,col:'#ff3355',y:.22+i*.14});},45+i*65);
+    setTimeout(()=>showNotif({title:`💥 ПОРАНЕНО: ${n.name}`,msg:`Осколкове поранення. SpO₂ <strong style="color:#ff3355">${Math.round(n.spo2)}%</strong> · ЧСС ${Math.round(n.hr)}<br>Дист. ${rd.toFixed(1)}м від BASE`,type:'p5',icon:'💥',duration:9000}),i*200);
   });
   if(near.length>1){const dead=near[1];dead.state='offline';lg2(`ВТРАЧЕНО: ${dead.name}`,'e');p2TL.push({t:190,lbl:`${dead.name}:OFFLINE`,col:'#ff9900',y:.54});setTimeout(()=>p2AutoHeal(dead),3200+Math.random()*3000);}
   p2TL.push({t:430,lbl:'Edge:ОТРИМАНО',col:'#00b4ff',y:.44});
@@ -1077,11 +1530,7 @@ function p2DrawMap(){
       path.slice(1,-1).forEach((p,i)=>{cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#ff9900';cx.fillText(`HOP${i+1}`,p.x+8,p.y-8);});
     }
   });
-  const anch=p2N.filter(n=>n.state!=='offline'&&n.anchor);
-  p2N.filter(n=>n.state!=='offline'&&!n.anchor).forEach(t=>{
-    const pt=triPoint(t,anch);
-    if(pt){cx.beginPath();cx.arc(pt.x,pt.y,6,0,Math.PI*2);cx.fillStyle='rgba(255,215,0,.8)';cx.fill();cx.strokeStyle='#ffd700';cx.lineWidth=1;cx.stroke();}
-  });
+  // No yellow tri dots
   p2N.forEach(n=>drawNode(cx,n,t2cfg.ns));
   drawEdge(cx,42,42);
   cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
@@ -1182,17 +1631,7 @@ function t3Draw(id){
     cx.fillText(`${rd.toFixed(1)}м`,(n.x+ex)/2+2,(n.y+ey)/2+6);
   });
   drawLinks(cx,sim.nodes,.2);
-  if(sim.nodes.length>=2){
-    const alive=sim.nodes.filter(n=>n.state!=='offline');
-    if(alive.length>=2){
-      const jx=alive.reduce((s,n)=>s+n.x,0)/alive.length+rnd(-4,4);
-      const jy=alive.reduce((s,n)=>s+n.y,0)/alive.length+rnd(-4,4);
-      cx.beginPath();cx.arc(jx,jy,6,0,Math.PI*2);cx.fillStyle='rgba(255,215,0,.82)';cx.fill();cx.strokeStyle='#ffd700';cx.lineWidth=1;cx.stroke();
-      alive.forEach(n=>{cx.beginPath();cx.moveTo(n.x,n.y);cx.lineTo(jx,jy);cx.strokeStyle='rgba(255,215,0,.14)';cx.setLineDash([2,5]);cx.lineWidth=1;cx.stroke();cx.setLineDash([]);});
-      cx.font='7px "Share Tech Mono"';cx.fillStyle='#ffd700';cx.textAlign='center';
-      cx.fillText(alive.length>=3?'ТРИАНГУЛЯЦІЯ':'ЧАСТКОВИЙ TRI',jx,jy-10);cx.textAlign='left';
-    }
-  }
+  // Tri dots removed - only show label text if full trilateration active
   sim.nodes.forEach(n=>drawNode(cx,n,.2));
   drawEdge(cx,ex,ey);
   if(sim.trigFl>0){cx.beginPath();cx.arc(ex,ey,sim.trigFl*2,0,Math.PI*2);cx.strokeStyle=`rgba(255,215,0,${sim.trigFl/80*.55})`;cx.lineWidth=2;cx.stroke();}
@@ -1267,10 +1706,19 @@ function commWound(){
   if(!ok.length) return;
   const m=ok[Math.floor(Math.random()*ok.length)];
   m.state='danger';m.spo2=rnd(62,78);m.hr=rnd(145,210);
+  commNotifiedIds.add(m.id);
+  showNotif({
+    title:`🚨 ПОРАНЕНО: ${m.name.toUpperCase()}`,
+    msg:`SpO₂ <strong style="color:#ff3355">${Math.round(m.spo2)}%</strong> · ЧСС <strong>${Math.round(m.hr)}</strong> уд/хв<br>Відстань від командира: <strong style="color:#ffd700">${m.dist.toFixed(0)}м</strong>`,
+    meta:`Сигнал P5 · Шифр: ${AES_KEYS[m.id%AES_KEYS.length]} · ${new Date().toLocaleTimeString()}`,
+    type:'p5',icon:'🚨',duration:10000
+  });
 }
 
 function commHeal(){
   commMembers.forEach(m=>{m.state='ok';m.spo2=rnd(93,100);m.hr=rnd(60,85);});
+  commNotifiedIds.clear();
+  showNotif({title:'↺ ГРУПУ ВІДНОВЛЕНО',msg:'Всі показники в нормі. Продовжуємо моніторинг.',type:'p2',icon:'✓',duration:4000});
 }
 
 function commResetDist(){
@@ -1286,8 +1734,10 @@ function commUpdate(){
     if(m.state==='warn'){m.spo2=Math.min(100,Math.max(80,m.spo2+rnd(-.08,.05)));m.hr=Math.max(100,m.hr+rnd(-.15,.15));}
     if(m.state==='danger'){m.spo2=Math.max(55,m.spo2-.015);m.hr=Math.min(230,m.hr+.04);}
     // auto-warn
-    if(m.spo2<88&&m.state==='ok') m.state='warn';
-    if(m.spo2<80&&m.state!=='offline') m.state='danger';
+    if(m.spo2<88&&m.state==='ok'){m.state='warn';
+      showNotif({title:`⚠ УВАГА: ${m.name}`,msg:`SpO₂ опустився до <strong style="color:#ff9900">${Math.round(m.spo2)}%</strong><br>Потрібно спостереження. Дист: ${m.dist.toFixed(0)}м`,type:'p4',icon:'⚠',duration:6000});}
+    if(m.spo2<80&&m.state!=='offline'&&m.state!=='danger'){m.state='danger';
+      if(!commNotifiedIds.has(m.id)){commNotifiedIds.add(m.id);showNotif({title:`🚨 КРИТИЧНО: ${m.name}`,msg:`SpO₂ <strong style="color:#ff3355">${Math.round(m.spo2)}%</strong> — небезпека для життя!<br>ЧСС ${Math.round(m.hr)} · Дист: ${m.dist.toFixed(0)}м · P5 BURST`,type:'p5',icon:'🚨',duration:10000});}}
     // hb update
     if(commT%8===0){m.hbArr.shift();m.hbArr.push(m.state==='danger'?rnd(10,16):rnd(3,12));}
   });
@@ -1571,24 +2021,34 @@ function updateCommSidebar(){
   // Injury report
   const injured=commMembers.filter(m=>m.state==='danger'||m.state==='warn');
   if(injured.length===0){
-    document.getElementById('injuryReport').innerHTML=`<div style="font-family:var(--mono);font-size:.52rem;color:var(--c2);padding:8px 0">✓ Поранених не виявлено</div>`;
+    document.getElementById('injuryReport').innerHTML=`<div style="font-family:var(--mono);font-size:.52rem;color:var(--c2);padding:8px 4px">✓ Поранених не виявлено. Всі показники в нормі.</div>`;
   } else {
     document.getElementById('injuryReport').innerHTML=injured.map(m=>{
-      const spo2pct=Math.round((m.spo2-50)/50*100);
-      const severity=m.state==='danger'?'КРИТИЧНО':'УВАГА';
-      const sevCol=m.state==='danger'?'#ff3355':'#ff9900';
-      return `<div class="injury-panel">
-        <div class="ip-title" style="color:${sevCol}">⚠ ${m.name} · ${severity}</div>
-        <div class="ip-row">
-          <span class="ip-k">SpO₂</span>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="ip-v" style="color:${sevCol}">${Math.round(m.spo2)}%</span>
-            <div class="ip-bar-wrap"><div class="ip-bar" style="width:${spo2pct}%;background:${sevCol}"></div></div>
+      const isDanger=m.state==='danger';
+      const sevCol=isDanger?'#ff3355':'#ff9900';
+      const spo2pct=Math.max(0,Math.min(100,Math.round((m.spo2-50)/50*100)));
+      const hrPct=Math.min(100,Math.round((m.hr-40)/160*100));
+      return `<div class="ir-card" style="border-color:${sevCol}44;background:${isDanger?'rgba(255,51,85,.06)':'rgba(255,153,0,.05)'}">
+        <div class="ir-header">
+          <span class="ir-name">${m.name}</span>
+          <span class="ir-severity sbadge ${isDanger?'danger':'warn'}">${isDanger?'⚠ КРИТИЧНО':'⚡ УВАГА'}</span>
+        </div>
+        <div class="ir-row">
+          <span class="ir-k">SpO₂ (норма >95%)</span>
+          <div class="ir-vbar">
+            <span class="ir-v" style="color:${sevCol}">${Math.round(m.spo2)}%</span>
+            <div class="ir-bar-wrap"><div class="ir-bar" style="width:${spo2pct}%;background:${sevCol}"></div></div>
           </div>
         </div>
-        <div class="ip-row"><span class="ip-k">ЧСС</span><span class="ip-v" style="color:${sevCol}">${Math.round(m.hr)} уд/хв</span></div>
-        <div class="ip-row"><span class="ip-k">Дистанція</span><span class="ip-v">${m.dist.toFixed(0)} м від BASE</span></div>
-        <div class="ip-row"><span class="ip-k">Пріоритет</span><span class="ip-v" style="color:${sevCol}">${m.state==='danger'?'P5 — НЕГАЙНО':'P4 — ТЕРМІНОВО'}</span></div>
+        <div class="ir-row">
+          <span class="ir-k">ЧСС (норма 60–100)</span>
+          <div class="ir-vbar">
+            <span class="ir-v" style="color:${sevCol}">${Math.round(m.hr)} уд/хв</span>
+            <div class="ir-bar-wrap"><div class="ir-bar" style="width:${hrPct}%;background:${sevCol}"></div></div>
+          </div>
+        </div>
+        <div class="ir-row"><span class="ir-k">Дистанція до BASE</span><span class="ir-v" style="color:#ffd700">${m.dist.toFixed(0)} м</span></div>
+        <div class="ir-row" style="border:none;margin:0;padding:0"><span class="ir-k">Пріоритет сигналу</span><span class="ir-v" style="color:${sevCol}">${isDanger?'P5 — НЕГАЙНА ЕВАКУАЦІЯ':'P4 — ПОТРІБНА ДОПОМОГА'}</span></div>
       </div>`;
     }).join('');
   }
@@ -1618,33 +2078,188 @@ let p5Built=false;
 function buildP5(){
   if(p5Built) return;p5Built=true;
   const specs=[
-    {t:'НОСИМИЙ ВУЗОЛ',c:'#00b4ff',r:[['MCU','ESP32-WROOM-32'],['RAM/Flash','520KB / 4MB'],['UWB модуль','DWM3000 / DW1000'],['UWB точність','±5–10 см (LOS)'],['UWB дальність','До 200 м'],['Sensor','MAX30102 SpO₂+ЧСС'],['АКБ','LiPo 2000 мАг'],['Автономія','48–72 год'],['Вага','~35 г'],['IP','IP67']]},
-    {t:'EDGE BASE',c:'#00ffaa',r:[['MCU','Raspberry Pi 4 (4ГБ)'],['ОС','RPi OS Lite 64bit'],['Зв\'язок','WiFi 5G / UART bridge'],['Обробка','Python + NumPy + SciPy'],['БД','SQLite (local, offline)'],['UI','FastAPI + WebSocket'],['Живлення','USB-C 5В/3А'],['Захист','AES-256 storage'],['Відображення','Web dashboard'],['Розмір','85×56×17 мм']]},
-    {t:'RF & ЗАХИСТ',c:'#ff9900',r:[['Стандарт','IEEE 802.15.4z (UWB)'],['Діапазон','3.1–4.9 ГГц (hopping)'],['Шифрування','AES-128 CBC'],['Handshake','ECDH + HMAC-SHA256'],['Session keys','Per-burst rotating'],['LPD метод','Burst + spread-spectrum'],['TX потужність','-41.3 dBm/MHz'],['Hopping step','±300 МГц/TX'],['Anti-replay','Timestamp + nonce'],['Overhead','<15% channel use']]},
-    {t:'MESH АЛГОРИТМ',c:'#c844ff',r:[['Тип','Ad-hoc peer-to-peer'],['Протокол','ESP-NOW / LoRa custom'],['Hops','1–3 (configurable)'],['Routing','Dijkstra + fallback'],['Self-healing','<7с відновлення'],['Heartbeat','500 мс interval'],['Timeout','3× HB = offline'],['Retry','3 спроби + ACK'],['Пакет','48–128 байт'],['Latency','<5 мс one-hop']]},
-    {t:'ЛОКАЛІЗАЦІЯ',c:'#ffd700',r:[['Метод','ToF Trilateration'],['Алгоритм','Least Squares (LSQ)'],['Фільтр','Extended Kalman (EKF)'],['Мін. якорів','≥3 вузли'],['Точність','0.5–1.5 м (3 якоря)'],['Оновлення','1–10 Гц'],['ToF шум','±0.1–0.5 м'],['Конвергенція','<30 с'],['GPS','Не потрібний'],['Вимір','distance=(RTT×c)/2']]},
-    {t:'ЕНЕРГІЯ',c:'#ff6688',r:[['Deep sleep','~15 мкА'],['UWB ranging','~100 мА / 50 мс'],['TX event','~170 мА / 15 мс'],['Sensor idle','~0.6 мА'],['Avg 4Hz','~5–8 мА'],['Sleep duty','~94% часу'],['Wake-on','Critical threshold'],['BMS','IP5306 + TP4056'],['Charge','USB-C / wireless'],['LED','RGB статус']]},
+    {t:'НОСИМИЙ ВУЗОЛ',c:'#00b4ff',r:[
+      ['MCU','ESP32-WROOM-32','Мікроконтролер — мозок браслету. Обробляє всі дані, керує радіо та сенсорами'],
+      ['RAM/Flash','520KB / 4MB','Оперативна/постійна пам\'ять. 4MB вистачає для прошивки, логів та кешу'],
+      ['UWB модуль','DWM3000 / DW1000','Чіп надширокосмугового радіо. Він як ліхтарик що "освітлює" простір сигналами'],
+      ['UWB точність','±5–10 см (LOS)','Точність вимірювання відстані при прямій видимості. Краще за GPS у 10-20 разів'],
+      ['UWB дальність','До 200 м','Максимальна дальність зв\'язку між браслетами'],
+      ['Sensor','MAX30102 SpO₂+ЧСС','Оптичний сенсор: вимірює насичення крові киснем і пульс через шкіру пальця'],
+      ['АКБ','LiPo 2000 мАг','Літієвий акумулятор. Як у смартфоні, але оптимізований для малого споживання'],
+      ['Автономія','48–72 год','Час роботи без зарядки. Завдяки режиму глибокого сну 94% часу'],
+      ['Вага','~35 г','Легший за більшість наручних годинників'],
+      ['IP','IP67','Захист від пилу та занурення у воду до 1м на 30хв'],
+    ]},
+    {t:'EDGE BASE (КОМАНДНИЙ ВУЗОЛ)',c:'#00ffaa',r:[
+      ['MCU','Raspberry Pi 4 (4ГБ)','Одноплатний комп\'ютер — центр обробки даних всієї групи'],
+      ['ОС','RPi OS Lite 64bit','Легка Linux-система без графічного інтерфейсу, швидка та стабільна'],
+      ['Зв\'язок','WiFi 5G / UART bridge','Підключення до браслетів через UWB-міст, до команди через WiFi'],
+      ['Обробка','Python + NumPy + SciPy','Мова програмування + бібліотеки для математики: трилатерація, фільтри'],
+      ['БД','SQLite (local, offline)','Локальна база даних. Зберігає всі дані навіть без інтернету'],
+      ['UI','FastAPI + WebSocket','Веб-інтерфейс у реальному часі — командир бачить карту в браузері'],
+      ['Живлення','USB-C 5В/3А','Стандартне зарядне. Можна від повербанку або авто-інвертора'],
+      ['Захист','AES-256 storage','Всі дані на диску зашифровані — навіть якщо пристрій захоплять'],
+      ['Відображення','Web dashboard','Карта групи, стани, графіки — доступно з будь-якого браузера'],
+      ['Розмір','85×56×17 мм','Менше за звичайний смартфон'],
+    ]},
+    {t:'RF & ЗАХИСТ СИГНАЛУ',c:'#ff9900',r:[
+      ['Стандарт','IEEE 802.15.4z (UWB)','Міжнародний стандарт надширокосмугового зв\'язку. Той самий що в iPhone для AirDrop та ключів'],
+      ['Діапазон','3.1–4.9 ГГц (hopping)','Сигнал стрибає між частотами — ворогу важко заглушити чи прослухати'],
+      ['Шифрування','AES-128 CBC','Кожен пакет зашифрований 128-бітним ключем. Злому — тисячі років обчислень'],
+      ['Handshake','ECDH + HMAC-SHA256','Браслети "вітаються" безпечно: обмінюються ключами без їхньої передачі відкрито'],
+      ['Session keys','Per-burst rotating','Ключ шифрування змінюється з кожним сеансом — навіть перехоплений ключ марний'],
+      ['LPD метод','Burst + spread-spectrum','Короткі спалахи сигналу + розширення спектру = мінімальна видимість для ворога'],
+      ['TX потужність','-41.3 dBm/MHz','Дуже слабкий сигнал — за порогом виявлення звичайними засобами РЕБ'],
+      ['Hopping step','±300 МГц/TX','Щокожна передача — нова частота. Класичний джемер не встигає'],
+      ['Anti-replay','Timestamp + nonce','Кожен пакет унікальний: перехоплений і повторно надісланий — відкинеться'],
+      ['Overhead','<15% channel use','Лише 15% часу ефіру зайнято — ефективно, без перевантаження'],
+    ]},
+    {t:'MESH АЛГОРИТМ (МЕРЕЖА)',c:'#c844ff',r:[
+      ['Тип','Ad-hoc peer-to-peer','Кожен з кожним, без сервера. Зникає один — решта продовжує'],
+      ['Протокол','ESP-NOW / LoRa custom','Протоколи зв\'язку: швидкий ESP-NOW або дальнобійний LoRa залежно від умов'],
+      ['Hops','1–3 (configurable)','Максимум 3 "стрибки" через посередників до командного вузла'],
+      ['Routing','Dijkstra + fallback','Алгоритм пошуку найкоротшого маршруту (як GPS-навігатор, але для пакетів)'],
+      ['Self-healing','<7с відновлення','Мережа сама перебудовується за 7 секунд після втрати будь-якого вузла'],
+      ['Heartbeat','500 мс interval','Кожні пів секунди браслет "подає ознаки життя" сусідам'],
+      ['Timeout','3× HB = offline','Не відповів на 3 heartbeat підряд — система вважає вузол втраченим'],
+      ['Retry','3 спроби + ACK','Пакет відправляється тричі, поки не отримано підтвердження'],
+      ['Пакет','48–128 байт','Розмір одного повідомлення: менший = швидший і менш помітний'],
+      ['Latency','<5 мс one-hop','Затримка менше 5 мілісекунд на один перехід — реальний час'],
+    ]},
+    {t:'ЛОКАЛІЗАЦІЯ (МІСЦЕЗНАХОДЖЕННЯ)',c:'#ffd700',r:[
+      ['Метод','ToF Trilateration','Час польоту сигналу → відстань → положення. Як GPS, але через свої браслети'],
+      ['Алгоритм','Least Squares (LSQ)','Математика що знаходить точку перетину кіл відстаней від трьох точок'],
+      ['Фільтр','Extended Kalman (EKF)','Математичний фільтр, що згладжує помилки вимірювань і передбачає рух'],
+      ['Мін. якорів','≥3 вузли','Щоб визначити точку в 2D — потрібно мінімум 3 відомі опорні точки'],
+      ['Точність','0.5–1.5 м (3 якоря)','З трьома браслетами точність кращe, ніж більшість GPS'],
+      ['Оновлення','1–10 Гц','Від 1 до 10 оновлень позиції в секунду'],
+      ['ToF шум','±0.1–0.5 м','Похибка вимірювання відстані через відбиття, тіло бійця, перешкоди'],
+      ['Конвергенція','<30 с','Час до отримання першої надійної позиції після увімкнення'],
+      ['GPS','Не потрібний','Працює в підвалах, тунелях, в умовах глушіння — там де GPS мовчить'],
+      ['Вимір','distance=(RTT×c)/2','Формула: відстань = (час туди-назад × швидкість світла) / 2'],
+    ]},
+    {t:'ЕНЕРГОСПОЖИВАННЯ',c:'#ff6688',r:[
+      ['Deep sleep','~15 мкА','Режим глибокого сну: споживання мікроамперне — менше, ніж підтримка часу'],
+      ['UWB ranging','~100 мА / 50 мс','Вимірювання відстані: короткий інтенсивний імпульс кожні 250мс'],
+      ['TX event','~170 мА / 15 мс','Передача критичного пакету: пік струму, але дуже короткий'],
+      ['Sensor idle','~0.6 мА','Сенсор SpO₂ у режимі очікування між вимірюваннями'],
+      ['Avg 4Hz','~5–8 мА','Середнє споживання при 4 вимірюваннях на секунду'],
+      ['Sleep duty','~94% часу','94% часу мікроконтролер спить → 2000мАг вистачає на 72 год'],
+      ['Wake-on','Critical threshold','Прокидається миттєво якщо SpO₂ впав нижче порогу — навіть уві сні'],
+      ['BMS','IP5306 + TP4056','Мікросхеми управління акумулятором і зарядки: захист від перезаряду'],
+      ['Charge','USB-C / wireless','Заряджається від стандартного кабелю або бездротово (Qi)'],
+      ['LED','RGB статус','Три кольори: синій (норма) / жовтий (увага) / червоний (критично)'],
+    ]},
   ];
-  const algos=[
-    {t:'ToF ОБЧИСЛЕННЯ — ВІДСТАНЬ',s:[['1','Вузол A надсилає UWB-імпульс, записує TX timestamp T₁ (нс точність)'],['2','Вузол B отримує імпульс (RX:T₂), обробляє та надсилає відповідь (TX:T₃)'],['3','Вузол A отримує відповідь (RX:T₄). RTT = (T₄−T₁)−(T₃−T₂)'],['4','Відстань: distance = (RTT_ns × c) / (2 × 10⁹) метри'],['5','Шум: d_measured = d_real + Gauss(0, σ), де σ = ±0.1–0.5 м'],['6','Пакет шифрується AES-128 перед TX. HMAC-SHA256 для автентифікації']],
-     code:'# ToF distance computation\nRTT_ns = (T4 - T1) - (T3 - T2)          # double-sided TWR\ndist_m = (RTT_ns * 299_792_458) / 2e9   # distance in meters\ndist_measured = dist_m + gauss(0, noise_sigma)  # add ToF noise'},
-    {t:'ТРИЛАТЕРАЦІЯ (LEAST SQUARES)',s:[['1','Потрібно ≥3 якорних вузли з відомими відносними координатами (x,y)'],['2','Для кожного якоря i: (x−xᵢ)² + (y−yᵢ)² = dᵢ² (виміряна ToF відстань)'],['3','Лінеаризація: 2(xᵢ−xₙ)x + 2(yᵢ−yₙ)y = dₙ²−dᵢ²−xₙ²+xᵢ²−yₙ²+yᵢ²'],['4','Матрична форма: Ax = b → x = (AᵀA)⁻¹Aᵀb (pseudo-inverse)'],['5','Extended Kalman Filter: стан [x,y,vx,vy] → згладжування + прогноз'],['6','Радіус невизначеності σᵣ = f(ToF noise, геометрія, кількість якорів)']],
-     code:'A = 2*np.array([[xi-xn, yi-yn] for xi,yi in anchors_coords[:-1]])\nb = np.array([dn2-di2 + xi2-xn2 + yi2-yn2 for ...])\npos = np.linalg.lstsq(A, b, rcond=None)[0]   # [x_rel, y_rel]'},
-    {t:'SELF-HEALING MESH',s:[['1','Кожен вузол надсилає heartbeat (HB) кожні 500 мс сусідам у межах UWB-дальності'],['2','Timeout: якщо 3× HB не отримано → вузол позначається OFFLINE'],['3','Broadcast topology update: всі вузли отримують оновлену карту мережі'],['4','Routing table оновлюється: Dijkstra або Bellman-Ford, 2–3 hop paths'],['5','Пакети перенаправляються через альтернативні вузли (relay HOP1/HOP2/HOP3)'],['6','Відновлення: вузол повертається → ECDH re-handshake → новий session key → join']],
-     code:'if time_since_hb > 3 * HB_INTERVAL:\n    mark_offline(node_id)\n    broadcast_topology_update(my_routing_table)\n    reroute_via_neighbors(offline_id, max_hops=3)'},
-    {t:'ПРІОРИТЕТНА ЧЕРГА ТА BURST',s:[['1','Кожен пакет отримує мітку пріоритету P1–P5 залежно від типу події'],['2','P5 (CRITICAL): SpO₂<80%, ЧСС>190 → негайний burst без затримки'],['3','P4 (URGENT): SpO₂ 80-88% → черга з низькою затримкою (<50мс)'],['4','P2 (HEARTBEAT): регулярний 500мс beacon для відстеження активності'],['5','Burst mode: серія 3–5 ідентичних пакетів для надійності в шумному середовищі'],['6','Частотний стрибок: кожен TX на новій частоті 3.1–4.9ГГц (anti-jamming)']],
-     code:'# Priority burst transmission\nif vitals.spo2 < 80 or vitals.hr > 190:\n    pkt.priority = 5\n    for _ in range(BURST_COUNT):  # 3-5 repeats\n        freq = random.choice(FREQ_BANDS)  # hop\n        radio.tx(encrypt_aes128(pkt), freq)\n        sleep(BURST_INTERVAL_MS)'},
+
+  const algoData=[
+    {
+      t:'ЯК ВИМІРЮЄТЬСЯ ВІДСТАНЬ',
+      simple:'Браслет надсилає радіосигнал до сусіда і чекає відповіді. Вимірюємо час туди-назад (RTT). Оскільки сигнал летить зі швидкістю світла, ділимо час на два — отримуємо відстань. Це як луна: чим довше відлуння — тим далі стіна.',
+      steps:[
+        {n:'1',t:'Браслет А відправляє UWB-імпульс і записує точний час відправки (T₁)',tip:'UWB-імпульс — це надкороткий радіосплеск (~2 нс). Час записується з нс-точністю завдяки кристалічному генератору'},
+        {n:'2',t:'Браслет Б отримує сигнал (T₂), обробляє і відправляє відповідь (T₃)',tip:'Між отриманням і відповіддю є фіксована затримка обробки — вона також вираховується'},
+        {n:'3',t:'Браслет А отримує відповідь (T₄). Час польоту = (T₄−T₁) − (T₃−T₂)',tip:'Double-sided TWR (Two-Way Ranging) — більш точний ніж одностороннє вимірювання'},
+        {n:'4',t:'Відстань = час_польоту_нс × 299 792 458 м/с ÷ 2 000 000 000',tip:'299 792 458 — швидкість світла (і радіосигналу) у вакуумі, в метрах на секунду'},
+        {n:'5',t:'До виміряної відстані додається невелика похибка ±0.1–0.5м (відбиття, тіло)',tip:'Мультипасна інтерференція: сигнал відбивається від стін/тіл і приходить трохи пізніше'},
+        {n:'6',t:'Пакет шифрується AES-128 та підписується HMAC-SHA256 перед відправкою',tip:'HMAC — криптографічний підпис. Будь-яка зміна пакету → підпис невірний → пакет відкинути'},
+      ],
+      code:'RTT_ns = (T4 - T1) - (T3 - T2)          # подвійне двостороннє вимірювання\ndist_m = (RTT_ns * 299_792_458) / 2e9   # відстань у метрах\ndist_measured = dist_m + gauss(0, noise) # + похибка середовища'
+    },
+    {
+      t:'ЯК ВИЗНАЧАЄТЬСЯ МІСЦЕ (ТРИЛАТЕРАЦІЯ)',
+      simple:'Уяви три браслети на відомих позиціях. Кожен каже: "Ти від мене на Xм". Навколо кожного малюємо коло радіусом X. Місце де три кола перетинаються — і є точка де знаходиться боєць. Як в грі "гаряче-холодно" від трьох людей одночасно.',
+      steps:[
+        {n:'1',t:'Потрібно ≥3 браслети-якоря з відомими відносними координатами',tip:'Якорі не мусять знати GPS-координати. Достатньо знати відстань між ними (виміряту ToF)'},
+        {n:'2',t:'Кожен якір повідомляє відстань до невідомої точки: (x−xᵢ)²+(y−yᵢ)²=dᵢ²',tip:'Це рівняння кола. Якір знаходиться в центрі кола радіусом dᵢ'},
+        {n:'3',t:'Три рівняння кіл лінеаризуються (віднімання: коло-коло = лінія)',tip:'Різниця двох рівнянь квадратів дає лінійне рівняння. 3 кола → 2 лінії → 1 точка'},
+        {n:'4',t:'Система Ax=b розв\'язується методом найменших квадратів (LSQ)',tip:'LSQ мінімізує суму квадратів похибок — оптимальне рішення навіть при шумі вимірювань'},
+        {n:'5',t:'Kalman-фільтр згладжує відповіді: [x,y,vx,vy] → предиктор позиції',tip:'EKF прогнозує де буде боєць у наступний момент і коригує на нове вимірювання'},
+        {n:'6',t:'Радіус кола невизначеності залежить від кількості якорів і точності ToF',tip:'3 якоря → ~1м точність. 4+ якоря → <0.5м. Геометрія розташування теж важлива (GDOP)'},
+      ],
+      code:'# Трилатерація: 3 кола → 1 точка\nA = 2*np.array([[xi-xn, yi-yn] for xi,yi in anchors[:-1]])\nb = np.array([dn²-di²+xi²-xn²+yi²-yn² for ...])\npos_xy = np.linalg.lstsq(A, b, rcond=None)[0]\n# Kalman: x_new = x + K*(вимір - прогноз)'
+    },
+    {
+      t:'ЯК МЕРЕЖА САМОВІДНОВЛЮЄТЬСЯ',
+      simple:'Кожен браслет кожні 0.5 секунди "кричить" сусідам: "Я тут!". Якщо хтось не відповів тричі підряд — його вважають втраченим і пакети йдуть іншим шляхом. Як солдати в ланцюзі: якщо один впав — передача іде через наступного.',
+      steps:[
+        {n:'1',t:'Кожні 500мс браслет відправляє heartbeat-пакет всім сусідам у радіусі UWB',tip:'Heartbeat — крихітний 48-байтний пакет: "Я живий, мій стан: X, маршрут: Y"'},
+        {n:'2',t:'Якщо 3 heartbeat підряд не отримано → вузол позначається OFFLINE',tip:'3×500мс = 1.5с до виявлення втрати. Це компроміс між швидкістю і false-positive'},
+        {n:'3',t:'Broadcast: всі вузли отримують оновлену карту топології мережі',tip:'Дистанс-вектор: кожен ділиться своєю таблицею маршрутів з сусідами (як Bellman-Ford)'},
+        {n:'4',t:'Dijkstra перебудовує оптимальні маршрути через живі вузли',tip:'Dijkstra — класичний алгоритм найкоротшого шляху. O(n²) — дуже швидкий для 10 вузлів'},
+        {n:'5',t:'Пакети від критичного вузла йдуть через альтернативні relay (HOP1→HOP2→EDGE)',tip:'Максимум 3 стрибки: при більшій кількості затримка і ймовірність помилки ростуть'},
+        {n:'6',t:'Відновлення: новий ECDH-handshake → свіжий session key → вузол у мережі',tip:'ECDH — обмін ключами Діффі-Хеллмана на еліптичних кривих. Не передає ключ — генерує спільний секрет'},
+      ],
+      code:'if now - last_heartbeat > 3 * 500ms:\n    topology.mark_offline(node_id)\n    dijkstra(topology)          # перебудова маршрутів\n    reroute(packets, max_hops=3)\n# Повернення:\nsecret = ECDH(my_priv, peer_pub)\nsession_key = HKDF(secret)'
+    },
+    {
+      t:'ЯК ПРАЦЮЄ ПРІОРИТЕТ ТА ЗАХИСТ',
+      simple:'Не всі повідомлення однаково важливі. "Боєць поранений" важливіше за "браслет живий". Критичні сигнали відправляються першими, повторюються кілька разів і на різних частотах — як кричати і стукати одночасно щоб точно почули.',
+      steps:[
+        {n:'1',t:'Кожному пакету присвоюється пріоритет P1–P5 залежно від типу події',tip:'P5: SpO₂<80% або ЧСС>190. P4: SpO₂ 80-88%. P3: сенсор руху/двері. P2: heartbeat. P1: діагностика'},
+        {n:'2',t:'P5 (CRITICAL): обходить всі черги, відправляється миттєво (burst mode)',tip:'Burst: 3-5 однакових пакетів підряд на різних частотах. Хоча б один точно дійде'},
+        {n:'3',t:'Шифрування AES-128: payload → IV+ключ → ciphertext (нечитабельні дані)',tip:'AES-128 CBC: блоковий шифр з ланцюжком блоків. Навіть знаючи частину — не розшифрувати ціле'},
+        {n:'4',t:'HMAC-SHA256 підписує зашифрований пакет: будь-яка зміна → відкидати',tip:'HMAC = Hash-based MAC. SHA-256 дає 256-бітний хеш — підробити практично неможливо'},
+        {n:'5',t:'Частотний стрибок: кожна TX відбувається на новій частоті з 3.1-4.9ГГц',tip:'7 частотних каналів, вибір pseudorandom з seed=session_key. Jamming однієї частоти не допомагає'},
+        {n:'6',t:'Anti-replay: timestamp+nonce в кожному пакеті. Повторений пакет відкидається',tip:'Nonce = Number Once (число, що використовується раз). Запобігає атакам повтором перехоплених пакетів'},
+      ],
+      code:'# Повний цикл передачі\niv = os.urandom(16)                     # випадковий вектор ініціалізації\ncipher = AES128_CBC(session_key, iv)    # шифр\nciphertext = cipher.encrypt(payload)    # зашифровані дані\nmac = HMAC_SHA256(session_key, iv+ct)   # підпис\npkt = dict(priority=5, iv=iv, ct=ciphertext, mac=mac, ts=timestamp, nonce=nonce)\nfor freq in random_sample(FREQ_BANDS, BURST_N):\n    radio.tx(pkt, freq)                 # стрибок по частотах'
+    },
   ];
+
   const sg=document.getElementById('p5b');
-  sg.innerHTML=specs.map(s=>`
+  sg.innerHTML=`
+  <style>
+    .sp-tooltip{position:absolute;left:100%;top:50%;transform:translateY(-50%) translateX(6px);
+      background:rgba(4,8,20,.98);border:1px solid rgba(0,180,255,.3);padding:8px 12px;
+      border-radius:3px;font-family:var(--mono);font-size:.5rem;color:var(--light);
+      line-height:1.55;width:240px;z-index:300;opacity:0;pointer-events:none;
+      transition:opacity .18s;white-space:normal;box-shadow:0 4px 20px rgba(0,0,0,.6);}
+    .sprow-wrap{position:relative;}.sprow-wrap:hover .sp-tooltip{opacity:1;}
+    .sprow-wrap .sprow{cursor:help;}.sprow-wrap:hover .sprow{background:rgba(0,180,255,.04);}
+    .alg-block{grid-column:1/-1;background:var(--bg2);border:1px solid var(--border);border-radius:3px;padding:14px;margin-bottom:2px;}
+    .alg-head{font-family:var(--orb);font-size:.65rem;color:var(--c4);letter-spacing:2.5px;margin-bottom:8px;}
+    .alg-simple{background:rgba(0,255,170,.04);border:1px solid rgba(0,255,170,.14);border-radius:3px;
+      padding:10px 12px;margin-bottom:12px;font-family:var(--raj);font-size:.75rem;color:var(--light);line-height:1.65;}
+    .alg-simple-lbl{font-family:var(--orb);font-size:.5rem;color:var(--c2);letter-spacing:2px;margin-bottom:5px;}
+    .alg-steps-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+    .alg-step{display:flex;gap:8px;padding:6px 8px;border-radius:2px;cursor:help;
+      background:rgba(255,255,255,.02);transition:background .15s;position:relative;}
+    .alg-step:hover{background:rgba(0,180,255,.06);}
+    .alg-step:hover .alg-step-tip{opacity:1;pointer-events:auto;}
+    .alg-step-n{font-family:var(--mono);font-size:.65rem;color:var(--c1);font-weight:700;min-width:16px;flex-shrink:0;margin-top:1px;}
+    .alg-step-t{font-family:var(--mono);font-size:.54rem;color:var(--light);line-height:1.5;}
+    .alg-step-tip{position:absolute;left:calc(100% + 6px);top:0;background:rgba(4,8,20,.98);
+      border:1px solid rgba(0,180,255,.3);padding:8px 12px;border-radius:3px;
+      font-family:var(--mono);font-size:.5rem;color:var(--light);line-height:1.55;
+      width:240px;z-index:400;opacity:0;pointer-events:none;transition:opacity .18s;
+      white-space:normal;box-shadow:0 4px 20px rgba(0,0,0,.6);min-width:200px;}
+    .alg-code{font-family:var(--mono);font-size:.54rem;color:var(--c2);
+      background:rgba(0,255,170,.05);border:1px solid rgba(0,255,170,.15);
+      padding:8px 12px;border-radius:2px;white-space:pre;line-height:1.65;}
+  </style>
+  `+specs.map(s=>`
     <div class="spcard"><div class="spbar" style="background:${s.c}"></div>
     <div class="sptitle">${s.t}</div>
-    ${s.r.map(([k,v])=>`<div class="sprow"><span class="spk">${k}</span><span class="spv hi">${v}</span></div>`).join('')}
+    ${s.r.map(([k,v,tip])=>`
+    <div class="sprow-wrap">
+      <div class="sprow"><span class="spk">${k}</span><span class="spv hi">${v}</span></div>
+      ${tip?`<div class="sp-tooltip">💡 ${tip}</div>`:''}
+    </div>`).join('')}
     </div>`).join('')+
-    algos.map(a=>`
-    <div class="algo-card"><div class="algo-t">⚙ ${a.t}</div>
-    <div class="algo-steps">${a.s.map(([n,t])=>`<div class="algo-s"><span class="algo-n">${n}.</span><span class="algo-tx">${t}</span></div>`).join('')}
-    <div class="algo-code">${a.code}</div></div></div>`).join('');
+  algoData.map(a=>`
+    <div class="alg-block">
+      <div class="alg-head">⚙ ${a.t}</div>
+      <div class="alg-simple"><div class="alg-simple-lbl">🗣 ПРОСТИМИ СЛОВАМИ</div>${a.simple}</div>
+      <div class="alg-steps-grid">
+        ${a.steps.map(s=>`<div class="alg-step">
+          <span class="alg-step-n">${s.n}.</span>
+          <span class="alg-step-t">${s.t}</span>
+          <div class="alg-step-tip">💡 ${s.tip}</div>
+        </div>`).join('')}
+      </div>
+      <div class="alg-code">${a.code}</div>
+    </div>`).join('');
 }
 
 // ═══ TOPOLOGIES ═══
@@ -1667,7 +2282,177 @@ function t3Anim(id){
   const loop=()=>{t3SimUp(id);t3Draw(id);t3[id].raf=requestAnimationFrame(loop);};loop();
 }
 
-// ═══ RESIZE + INIT ═══
+// ═══════════════════════════════════════════════════════════════
+//  P0 OVERVIEW SLIDE LOGIC
+// ═══════════════════════════════════════════════════════════════
+const SLIDE_COUNT=7;
+let p0Cur=0,p0Animating=false;
+
+function p0Go(n){
+  if(p0Animating||n===p0Cur) return;
+  p0Animating=true;
+  const slides=document.querySelectorAll('.slide');
+  slides[p0Cur].classList.remove('active');
+  slides[p0Cur].classList.add('exit');
+  setTimeout(()=>slides[p0Cur].classList.remove('exit'),460);
+  p0Cur=n;
+  slides[p0Cur].classList.add('active');
+  setTimeout(()=>p0Animating=false,470);
+  // dots
+  document.querySelectorAll('.p0-dot').forEach((d,i)=>d.classList.toggle('on',i===p0Cur));
+  document.getElementById('p0cnt').textContent=`${p0Cur+1} / ${SLIDE_COUNT}`;
+  document.getElementById('p0prev').disabled=p0Cur===0;
+  document.getElementById('p0next').disabled=p0Cur===SLIDE_COUNT-1;
+  // start scCanvas when on slide 3
+  if(p0Cur===3) setTimeout(startScAnim,200);
+}
+function p0Next(){if(p0Cur<SLIDE_COUNT-1) p0Go(p0Cur+1);}
+function p0Prev(){if(p0Cur>0) p0Go(p0Cur-1);}
+
+// keyboard nav
+document.addEventListener('keydown',e=>{
+  if(aTab!==0) return;
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') p0Next();
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') p0Prev();
+});
+
+// ── scCanvas animation (slide 3: solution) ──
+let scRaf=null,scT=0;
+const SC_NODES=[
+  {x:.18,y:.28,name:'АЛЬ',col:'#00ffaa',state:'active'},
+  {x:.35,y:.55,name:'БРА',col:'#00ffaa',state:'active'},
+  {x:.22,y:.75,name:'ЧАР',col:'#ff3355',state:'critical'},
+  {x:.55,y:.35,name:'ДЕЛ',col:'#ff9900',state:'anchor'},
+  {x:.52,y:.68,name:'ЕХО',col:'#00ffaa',state:'active'},
+];
+const SC_EDGE={x:.82,y:.5};
+const SC_LINKS=[[0,1],[0,3],[1,2],[1,4],[2,4],[3,4],[0,3],[1,3]];
+
+function startScAnim(){
+  if(scRaf) cancelAnimationFrame(scRaf);
+  const c=document.getElementById('scCanvas');if(!c) return;
+  const loop=()=>{scT++;drawScCanvas();scRaf=requestAnimationFrame(loop);};loop();
+}
+
+function drawScCanvas(){
+  const c=document.getElementById('scCanvas');if(!c) return;
+  const pw=c.parentElement.offsetWidth||380,ph=340;
+  c.width=pw;c.height=ph;
+  const cx=c.getContext('2d');
+  cx.clearRect(0,0,pw,ph);cx.fillStyle='#020912';cx.fillRect(0,0,pw,ph);
+  // grid
+  cx.strokeStyle='#090f1c';cx.lineWidth=.5;
+  for(let x=0;x<pw;x+=36){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,ph);cx.stroke();}
+  for(let y=0;y<ph;y+=36){cx.beginPath();cx.moveTo(0,y);cx.lineTo(pw,y);cx.stroke();}
+
+  const nx=n=>n.x*pw,ny=n=>n.y*ph;
+  const ex=SC_EDGE.x*pw,ey=SC_EDGE.y*ph;
+
+  // draw links
+  SC_LINKS.forEach(([a,b])=>{
+    const na=SC_NODES[a],nb=SC_NODES[b];
+    cx.beginPath();cx.moveTo(nx(na),ny(na));cx.lineTo(nx(nb),ny(nb));
+    cx.strokeStyle='rgba(0,180,255,.18)';cx.lineWidth=1;cx.stroke();
+  });
+  // links to edge
+  SC_NODES.forEach(n=>{
+    cx.beginPath();cx.moveTo(nx(n),ny(n));cx.lineTo(ex,ey);
+    cx.strokeStyle='rgba(0,180,255,.09)';cx.lineWidth=1;cx.stroke();
+  });
+
+  // animated packet from critical node to edge via relay
+  const crit=SC_NODES[2];
+  const relay=SC_NODES[1];
+  const t=scT*.012;
+  // hop 1: crit → relay
+  const ph1=t%1;
+  cx.beginPath();cx.arc(nx(crit)+(nx(relay)-nx(crit))*ph1,ny(crit)+(ny(relay)-ny(crit))*ph1,4,0,Math.PI*2);
+  cx.fillStyle='#ff3355';cx.shadowColor='#ff3355';cx.shadowBlur=10;cx.fill();cx.shadowBlur=0;
+  // hop 2: relay → edge
+  const ph2=(t+.5)%1;
+  cx.beginPath();cx.arc(nx(relay)+(ex-nx(relay))*ph2,ny(relay)+(ey-ny(relay))*ph2,4,0,Math.PI*2);
+  cx.fillStyle='#c844ff';cx.shadowColor='#c844ff';cx.shadowBlur=10;cx.fill();cx.shadowBlur=0;
+
+  // draw edge
+  cx.strokeStyle='rgba(0,180,255,.5)';cx.fillStyle='rgba(0,180,255,.1)';cx.lineWidth=1.5;
+  cx.beginPath();cx.rect(ex-20,ey-14,40,28);cx.stroke();cx.fill();
+  cx.font='bold 7px "Orbitron"';cx.fillStyle='#00b4ff';cx.textAlign='center';
+  cx.fillText('EDGE',ex,ey-2);cx.fillText('BASE',ex,ey+9);cx.textAlign='left';
+  // edge pulse
+  const ep=(scT*.025)%1;
+  cx.beginPath();cx.arc(ex,ey,ep*50,0,Math.PI*2);
+  cx.strokeStyle=`rgba(0,180,255,${(1-ep)*.25})`;cx.lineWidth=1.5;cx.stroke();
+
+  // draw nodes
+  SC_NODES.forEach(n=>{
+    const r=7;
+    if(n.state==='critical'){
+      const pr=(scT*.04)%1;
+      cx.beginPath();cx.arc(nx(n),ny(n),r+pr*25,0,Math.PI*2);
+      cx.strokeStyle=`rgba(255,51,85,${(1-pr)*.5})`;cx.lineWidth=1.5;cx.stroke();
+    }
+    const grd=cx.createRadialGradient(nx(n),ny(n),0,nx(n),ny(n),r*3);
+    const gc=n.state==='critical'?'255,51,85':n.state==='anchor'?'255,153,0':'0,255,170';
+    grd.addColorStop(0,`rgba(${gc},.3)`);grd.addColorStop(1,`rgba(${gc},0)`);
+    cx.beginPath();cx.arc(nx(n),ny(n),r*3,0,Math.PI*2);cx.fillStyle=grd;cx.fill();
+    cx.beginPath();cx.arc(nx(n),ny(n),r,0,Math.PI*2);
+    cx.fillStyle=n.col;cx.fill();cx.strokeStyle='rgba(0,0,0,.4)';cx.lineWidth=1.5;cx.stroke();
+    cx.font='bold 7px "Orbitron"';cx.fillStyle=n.col;cx.textAlign='center';
+    cx.fillText(n.name,nx(n),ny(n)-r-5);
+    if(n.state==='critical'){
+      cx.font='7px "Share Tech Mono"';cx.fillStyle='#ff3355';
+      cx.fillText('⚠ P5',nx(n),ny(n)+r+12);
+    }
+    cx.textAlign='left';
+  });
+
+  // labels
+  cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.8)';
+  cx.textAlign='center';
+  cx.fillText('🔴 = ПОРАНЕНИЙ · 🟢 = НОРМА · ⚓ = ЯКІР-БРАСЛЕТ',pw/2,ph-10);
+  cx.textAlign='left';
+}
+const notifQ=[];
+function showNotif({title,msg,meta,type='p5',icon='⚠',duration=7000}){
+  const stack=document.getElementById('notifStack');
+  const el=document.createElement('div');
+  el.className=`notif ${type}`;
+  el.innerHTML=`
+    <div class="notif-icon">${icon}</div>
+    <div class="notif-body">
+      <div class="notif-title" style="color:${type==='p5'?'#ff3355':type==='p4'?'#ff9900':'#00ffaa'}">${title}</div>
+      <div class="notif-msg">${msg}</div>
+      ${meta?`<div class="notif-meta">${meta}</div>`:''}
+      <div class="notif-bar"><div class="notif-progress" id="np_${Date.now()}" style="background:${type==='p5'?'#ff3355':type==='p4'?'#ff9900':'#00ffaa'};width:100%"></div></div>
+    </div>
+    <div class="notif-close" onclick="dismissNotif(this.parentElement)">✕</div>`;
+  stack.prepend(el);
+  // trim to max 4
+  while(stack.children.length>4) stack.removeChild(stack.lastChild);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('show')));
+  const prog=el.querySelector('.notif-progress');
+  const start=Date.now();
+  const tick=()=>{
+    const pct=Math.max(0,100-(Date.now()-start)/duration*100);
+    if(prog) prog.style.width=pct+'%';
+    if(pct>0) requestAnimationFrame(tick);
+  };requestAnimationFrame(tick);
+  setTimeout(()=>dismissNotif(el),duration);
+}
+
+function dismissNotif(el){
+  if(!el||el.classList.contains('hide')) return;
+  el.classList.remove('show');el.classList.add('hide');
+  setTimeout(()=>el.remove(),400);
+}
+
+// Track who was already notified to avoid spam
+const notifiedIds=new Set();
+const commNotifiedIds=new Set();
+
+// ═══════════════════════════════════════════════════════════════
+//  RESIZE + INIT
+// ═══════════════════════════════════════════════════════════════
 window.addEventListener('resize',()=>{
   ['c1','c2','crtt','cfrq','ctl','ct0','ct1','ct2','zc'].forEach(id=>{const c=document.getElementById(id);if(c) rsz(c);});
 });
