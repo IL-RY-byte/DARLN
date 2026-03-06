@@ -586,8 +586,8 @@ canvas{display:block;width:100%;height:100%;}
     <div>
       <div style="font-family:var(--orb);font-size:.58rem;color:var(--c2);letter-spacing:2px;margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px;">ТЕХНОЛОГІЧНА ГОТОВНІСТЬ</div>
       <div class="sl-body" style="font-size:.78rem;">
-        Сьогодні вперше доступні <strong>компактні UWB-чіпи</strong> (DW3000) з точністю ±5см та ціною $8. Такі самі використовують iPhone для просторового позиціонування.<br><br>
-        <b>ESP32 + MAX30102</b> — повний стек моніторингу вміщується в корпус браслету вагою 35г.
+        Доступний <strong>NiceRF UWB650Pro</strong> — модуль на базі DW3000 з підсилювачем 500мВт (+27 dBm). Дальність >1км при точності ±10см. iPhone використовує той самий DW3000-чіп.<br><br>
+        <b>ESP32 + UWB650Pro + MAX30102</b> — повний стек моніторингу вміщується в корпус браслету вагою 35г.
       </div>
     </div>
     <div>
@@ -673,7 +673,7 @@ canvas{display:block;width:100%;height:100%;}
   <div style="display:flex;flex-direction:column;gap:10px;">
     <div style="background:var(--bg2);border:1px solid rgba(0,180,255,.3);border-radius:3px;padding:14px;">
       <div style="font-family:var(--orb);font-size:.62rem;color:var(--c1);letter-spacing:2px;margin-bottom:6px;">⌚ БРАСЛЕТ (НОСИМИЙ ВУЗОЛ)</div>
-      <div style="font-family:var(--raj);font-size:.78rem;color:var(--light);line-height:1.6;">ESP32 + UWB DWM3000 + MAX30102 (SpO₂+ЧСС) + LiPo 2000мАг + IP67<br><span style="color:var(--c6);font-family:var(--mono);font-size:.55rem;">~$45 · 35г · 72год автономності</span></div>
+      <div style="font-family:var(--raj);font-size:.78rem;color:var(--light);line-height:1.6;">ESP32 + NiceRF UWB650Pro (DW3000+PA 500мВт) + MAX30102 (SpO₂+ЧСС) + LiPo 2000мАг + IP67<br><span style="color:var(--c6);font-family:var(--mono);font-size:.55rem;">~$65 · 38г · 72год автономності · >1км LoS</span></div>
     </div>
     <div style="background:var(--bg2);border:1px solid rgba(0,255,170,.3);border-radius:3px;padding:14px;">
       <div style="font-family:var(--orb);font-size:.62rem;color:var(--c2);letter-spacing:2px;margin-bottom:6px;">📦 EDGE BASE (КОМАНДНИЙ ВУЗОЛ)</div>
@@ -815,7 +815,7 @@ canvas{display:block;width:100%;height:100%;}
   </div>
   <div id="p1c">
     <div class="cwrap"><canvas id="crtt"></canvas><div class="clbl">RTT (мс) · ToF вимірювання</div></div>
-    <div class="cwrap"><canvas id="cfrq"></canvas><div class="clbl">FREQ HOPPING (ГГц)</div></div>
+    <div class="cwrap"><canvas id="cfrq"></canvas><div class="clbl">RSSI · РІВЕНЬ СИГНАЛУ (dBm)</div></div>
   </div>
 </div>
 </div>
@@ -851,16 +851,22 @@ canvas{display:block;width:100%;height:100%;}
 <!-- ══════════ P3 TOPOLOGIES ══════════ -->
 <div class="pnl" id="p3">
 <div class="cfgbar">
-  <span style="font-family:var(--orb);font-size:.58rem;color:var(--c1);letter-spacing:2px">ТОПОЛОГІЇ РОЗГОРТАННЯ</span>
+  <span style="font-family:var(--orb);font-size:.58rem;color:var(--c1);letter-spacing:2px">📐 МАТЕМАТИКА UWB ПОЗИЦІОНУВАННЯ</span>
   <div class="csep"></div>
-  <button class="cb cbw" onclick="p3Trigger()">⚡ ПОДІЯ НА ВСІХ</button>
-  <button class="cb cbg" onclick="p3HealAll()">↺ HEAL ALL</button>
-  <button class="cb cbn" onclick="p3Reset()">⟳ ОНОВИТИ</button>
+  <button class="cb cbn" onclick="p3Reset()">⟳ ПЕРЕЗАПУСК</button>
 </div>
 <div id="p3b">
-  <div class="tc" id="tc0"><div class="tclbl">TOPO-A · 1 БРАСЛЕТ + BASE</div><canvas id="ct0"></canvas><div class="tcinfo"><div class="tcrow" id="ti0"></div></div></div>
-  <div class="tc" id="tc1"><div class="tclbl">TOPO-B · 2 БРАСЛЕТИ + BASE</div><canvas id="ct1"></canvas><div class="tcinfo"><div class="tcrow" id="ti1"></div></div></div>
-  <div class="tc" id="tc2"><div class="tclbl">TOPO-C · 3 БРАСЛЕТИ + BASE</div><canvas id="ct2"></canvas><div class="tcinfo"><div class="tcrow" id="ti2"></div></div></div>
+  <div class="tc" id="tc0"><div class="tclbl">TOPO-A · 1 ВИМІРЮВАННЯ · 360° НЕВИЗНАЧЕНІСТЬ</div><canvas id="ct0"></canvas><div class="tcinfo"><div class="tcrow" id="ti0"></div></div></div>
+  <div class="tc" id="tc1"><div class="tclbl">TOPO-B · 2 ВИМІРЮВАННЯ · 2 МОЖЛИВИХ ПОЗИЦІЇ</div><canvas id="ct1"></canvas><div class="tcinfo"><div class="tcrow" id="ti1"></div></div></div>
+  <div class="tc" id="tc2"><div class="tclbl">TOPO-C · 3 ВИМІРЮВАННЯ · ТОЧНА XY ПОЗИЦІЯ ✓</div><canvas id="ct2"></canvas><div class="tcinfo"><div class="tcrow" id="ti2"></div></div></div>
+</div>
+<div style="height:30px;background:rgba(0,8,22,.97);border-top:1px solid rgba(0,180,255,.15);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;">
+  <span style="font-family:var(--orb);font-size:.46rem;color:var(--c1);letter-spacing:2px;">🛰 STARLINK</span>
+  <span style="font-family:var(--mono);font-size:.46rem;color:var(--gray);">EDGE BASE</span>
+  <span style="font-family:var(--mono);font-size:.5rem;color:var(--c1);">→ 🛰 →</span>
+  <span style="font-family:var(--mono);font-size:.46rem;color:var(--c2);font-weight:700;">HQ INTEL MAP</span>
+  <div style="flex:1;height:1px;background:var(--border);"></div>
+  <span id="slStat" style="font-family:var(--mono);font-size:.46rem;color:var(--c2);">▲ TX: 0 PKT · Latency: — ms · Інтерактивна карта штабу</span>
 </div>
 </div>
 
@@ -966,7 +972,7 @@ canvas{display:block;width:100%;height:100%;}
 <script>
 'use strict';
 const C_LIGHT=299792458,UWB_RANGE=152,PX_M=0.28;
-const FREQ_BANDS=[3.1,3.4,3.7,4.0,4.3,4.6,4.9];
+const FREQ_BANDS=[62,65,68,71,74,77,80]; // RSSI magnitude (dBm), e.g. 62 = -62 dBm
 const NAMES=['Альфа','Браво','Чарлі','Дельта','Ехо','Фокстр','Голф','Хотел','Індія','Квебек'];
 const AES_KEYS=['FA3C','8BE1','2D97','C540','71A3','B9F6','3E2C','6D81','A4F5','D30E'];
 const SESS_PFXS=['SK-','TX-','RX-','MX-','HB-'];
@@ -1194,7 +1200,7 @@ function p1Init(){
   p1Logs=[];p1Pkt=0;RTTH.length=0;FRQH.length=0;p1T=0;p1Running=true;p1Paused=false;notifiedIds.clear();
   document.getElementById('ppb').textContent='⏸ ПАУЗА';
   lg1('Систему ініціалізовано — '+cfg.n+' вузлів активні','s');
-  lg1('UWB ToF · AES-128 · GPS DENIED · Freq-hop 3.1–4.9G','i');
+  lg1('NiceRF UWB650Pro · AES-128 · GPS DENIED · CH5 6489.6МГц · BW 499МГц · 500мВт','i');
   if(p1Raf) cancelAnimationFrame(p1Raf);
   p1Loop();
 }
@@ -1302,7 +1308,7 @@ function p1Draw(){
   p1N.forEach(n=>drawNode(cx,n,cfg.ns));
   drawEdge(cx,42,42);
   cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.85)';
-  cx.fillText(`GPS:DENIED · ToF:UWB · ENC:AES-128 · HOP:${cfg.hp} · ${cfg.fr}Hz · ±${cfg.ns}м`,8,cvs.height-8);
+  cx.fillText(`GPS:DENIED · UWB CH5 6.5ГГц · ENC:AES-128 · HOP:${cfg.hp} · ${cfg.fr}Hz · ±${cfg.ns}м · XY позиція`,8,cvs.height-8);
 }
 
 function p1DrawCharts(){
@@ -1335,20 +1341,23 @@ function p1DrawCharts(){
   drawGrid(fx,fc.width,fc.height,'#0a1628',28);
   const alive=p1N.filter(n=>n.state!=='offline');
   if(alive.length){
-    const bw=(fc.width-48)/alive.length-3,ph=fc.height-32,minF=3.0,maxF=5.0;
+    const bw=(fc.width-48)/alive.length-3,ph=fc.height-32,minF=62,maxF=80;
     fx.strokeStyle='rgba(80,130,170,.3)';fx.lineWidth=1;
     fx.beginPath();fx.moveTo(40,6);fx.lineTo(40,ph+6);fx.lineTo(fc.width-8,ph+6);fx.stroke();
     for(let i=0;i<=4;i++){
-      const y=ph+6-i*ph/4;fx.font='7px "Share Tech Mono"';fx.fillStyle='#253a56';fx.fillText((minF+i*(maxF-minF)/4).toFixed(1)+'G',2,y+3);
+      const y=ph+6-i*ph/4;fx.font='7px "Share Tech Mono"';fx.fillStyle='#253a56';
+      fx.fillText('-'+(maxF-Math.round(i*(maxF-minF)/4))+'dB',2,y+3);
       fx.strokeStyle='rgba(80,130,170,.07)';fx.beginPath();fx.moveTo(40,y);fx.lineTo(fc.width-8,y);fx.stroke();
     }
     alive.forEach((n,i)=>{
-      const xi=42+i*(bw+3),norm=(n.freq-minF)/(maxF-minF),bh=norm*ph;
-      const col=n.state==='critical'?'#ff3355':n.anchor?'#ff9900':'#00b4ff';
+      // stronger signal (lower dBm) = taller bar
+      const xi=42+i*(bw+3),norm=(maxF-n.freq)/(maxF-minF),bh=Math.max(2,norm*ph);
+      const rssiCol=n.freq<66?'#00ffaa':n.freq<72?'#ff9900':'#ff3355';
+      const col=n.state==='critical'?'#ff3355':n.anchor?'#ff9900':rssiCol;
       fx.fillStyle=col+'30';fx.fillRect(xi,ph+6-bh,bw,bh);
       fx.strokeStyle=col;fx.lineWidth=1;fx.strokeRect(xi,ph+6-bh,bw,bh);
       fx.font='7px "Share Tech Mono"';fx.fillStyle=col;fx.textAlign='center';
-      fx.fillText(n.freq.toFixed(1),xi+bw/2,ph+6-bh-3);
+      fx.fillText('-'+n.freq+'dB',xi+bw/2,ph+6-bh-3);
       fx.fillText(n.name.slice(0,3),xi+bw/2,ph+20);fx.textAlign='left';
     });
   }
@@ -1376,7 +1385,7 @@ function p1UpdateSidebar(){
     el.innerHTML=`<span class="nid">#${pad2(n.id)}</span>
       <div class="ni">
         <div class="nn" style="color:${col}">${n.name}${n.anchor?' ⚓':''}</div>
-        <div class="nd">${n.state==='offline'?'OFFLINE':`SpO₂:${Math.round(n.spo2)}% · ЧСС:${Math.round(n.hr)} · ${n.freq.toFixed(1)}G`}</div>
+        <div class="nd">${n.state==='offline'?'OFFLINE':`SpO₂:${Math.round(n.spo2)}% · ЧСС:${Math.round(n.hr)} · RSSI:-${n.freq}dBm`}</div>
       </div>
       <div class="nrtt" style="color:${rc2}">
         ${n.state==='offline'?'—':`<span style="color:var(--c6);font-size:.6rem">${distStr}</span><br>${n.lastRTT.toFixed(5)}ms`}
@@ -1419,7 +1428,7 @@ C1.addEventListener('mousemove',e=>{
       <div class="ttdiv"></div>
       <div class="ttr"><span class="ttk">HW ID</span><span class="ttv">${hit.hwId}</span></div>
       <div class="ttr"><span class="ttk">AES Key</span><span class="ttv">${hit.aes}</span></div>
-      <div class="ttr"><span class="ttk">Freq hop</span><span class="ttv">${hit.freq.toFixed(1)} ГГц</span></div>
+      <div class="ttr"><span class="ttk">RSSI сигнал</span><span class="ttv">−${hit.freq} dBm · CH5 6.5ГГц</span></div>
       <div class="ttr"><span class="ttk">Калман радіус</span><span class="ttv">${(hit.kr*PX_M).toFixed(2)} м</span></div>
       <div class="ttr"><span class="ttk">Енергія</span><span class="ttv">${Math.round(hit.energy)}%</span></div>
       <div class="ttr"><span class="ttk">Пакетів</span><span class="ttv">${hit.pktSent}</span></div>`;
@@ -1534,7 +1543,7 @@ function p2DrawMap(){
   p2N.forEach(n=>drawNode(cx,n,t2cfg.ns));
   drawEdge(cx,42,42);
   cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
-  cx.fillText('CRITICAL SCENARIO · UWB ToF · AES-128 · GPS-DENIED',8,cvs.height-8);
+  cx.fillText('CRITICAL SCENARIO · UWB650Pro CH5 · AES-128 · GPS-DENIED · XY позиція',8,cvs.height-8);
 }
 
 function p2DrawTL(){
@@ -1572,89 +1581,188 @@ function lg2(msg,type=''){p2L.unshift({msg,type,ts:ts()});if(p2L.length>25) p2L.
 function renderEvL(){document.getElementById('evl').innerHTML=p2Ev.map(e=>`<div class="evrow ${e.t}"><div class="evn">${e.n}</div><div class="evd">${e.d}</div></div>`).join('');}
 function p2Loop(){if(!p2Running) return;p2Update();p2DrawMap();p2DrawTL();p2Raf=requestAnimationFrame(p2Loop);}
 
-// ═══ TAB 3 ═══
-const TOPO_DEFS=[
-  {id:0,w:1,col:'#00b4ff',desc:'Базовий: 1 браслет + edge-база. Пряме UWB з\'єднання. RTT мінімальний. Триангуляція неможлива.'},
-  {id:1,w:2,col:'#00ffaa',desc:'Двоточкова: 2 браслети. Relay через сусіда. Часткова трилатерація.'},
-  {id:2,w:3,col:'#ff9900',desc:'Повна: 3 браслети. Trilateration активна. Multi-hop. Self-healing.'},
-];
-let t3=[],t3Ready=false;
+// ═══ TAB 3 — TOPOLOGY MATH VISUALIZATION ═══
+let t3Rafs=[null,null,null],starlinkPktCount=0,starlinkLat=38;
+
+function circleIntersect(x1,y1,r1,x2,y2,r2){
+  const d=Math.sqrt((x2-x1)**2+(y2-y1)**2);
+  if(d<0.1||d>r1+r2+0.5||d<Math.abs(r1-r2)-0.5) return null;
+  const a=(r1*r1-r2*r2+d*d)/(2*d),h2=r1*r1-a*a;
+  if(h2<0) return null;
+  const h=Math.sqrt(h2),mx=x1+a*(x2-x1)/d,my=y1+a*(y2-y1)/d;
+  return [{x:mx+h*(y2-y1)/d,y:my-h*(x2-x1)/d},{x:mx-h*(y2-y1)/d,y:my+h*(x2-x1)/d}];
+}
+
+function p3DrawBase(cx,bx,by){
+  cx.save();
+  cx.shadowBlur=10;cx.shadowColor='rgba(0,180,255,.5)';
+  cx.beginPath();cx.arc(bx,by,9,0,Math.PI*2);
+  cx.fillStyle='#020e1c';cx.fill();
+  cx.strokeStyle='#00b4ff';cx.lineWidth=2;cx.stroke();
+  cx.shadowBlur=0;
+  cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#00b4ff';cx.textAlign='center';
+  cx.fillText('BASE',bx,by+18);
+  cx.restore();
+}
+
+function p3DrawStar(cx,bx,by,t){
+  const sx=bx+4,sy=by-50;
+  cx.save();
+  cx.strokeStyle='rgba(100,200,255,.9)';cx.lineWidth=1.5;
+  cx.fillStyle='rgba(20,60,120,.85)';
+  cx.beginPath();cx.rect(sx-8,sy-4,16,8);cx.fill();cx.stroke();
+  cx.fillStyle='rgba(0,100,200,.7)';
+  cx.fillRect(sx-20,sy-2,10,4);cx.fillRect(sx+10,sy-2,10,4);
+  cx.strokeStyle='rgba(100,200,255,.6)';cx.lineWidth=1;
+  cx.strokeRect(sx-20,sy-2,10,4);cx.strokeRect(sx+10,sy-2,10,4);
+  const pulse=Math.sin(t*.05)*.5+.5;
+  cx.beginPath();cx.arc(sx,sy-9,1.5+pulse,0,Math.PI*2);
+  cx.fillStyle=`rgba(0,255,180,${.5+pulse*.5})`;cx.fill();
+  cx.font='6px "Share Tech Mono"';cx.fillStyle='rgba(100,220,255,.7)';cx.textAlign='center';
+  cx.fillText('STARLINK',sx,sy+14);
+  cx.restore();
+}
+
+function p3DrawTopoA(cx,w,h,t){
+  const bx=w*.50,by=h*.56,R=Math.min(w,h)*.30;
+  const ang=t*.009;
+  const tx=bx+Math.cos(ang)*R,ty=by+Math.sin(ang)*R;
+  const grad=cx.createRadialGradient(bx,by,R*.6,bx,by,R);
+  grad.addColorStop(0,'rgba(0,180,255,.07)');
+  grad.addColorStop(1,'rgba(0,180,255,.01)');
+  cx.beginPath();cx.arc(bx,by,R,0,Math.PI*2);cx.fillStyle=grad;cx.fill();
+  cx.setLineDash([5,4]);cx.beginPath();cx.arc(bx,by,R,0,Math.PI*2);
+  cx.strokeStyle='rgba(0,180,255,.55)';cx.lineWidth=1.5;cx.stroke();cx.setLineDash([]);
+  cx.font='9px "Share Tech Mono"';cx.fillStyle='rgba(0,180,255,.35)';cx.textAlign='center';
+  for(let i=0;i<12;i++){const a2=i/12*Math.PI*2;cx.fillText('?',bx+Math.cos(a2)*(R+11),by+Math.sin(a2)*(R+11)+3);}
+  cx.beginPath();cx.moveTo(bx,by);cx.lineTo(tx,ty);
+  cx.strokeStyle='rgba(255,215,0,.65)';cx.lineWidth=1.2;cx.stroke();
+  cx.font='6px "Share Tech Mono"';cx.fillStyle='rgba(255,215,0,.7)';cx.textAlign='center';
+  cx.fillText('d='+R.toFixed(0)+'px',(bx+tx)/2+8,(by+ty)/2-5);
+  cx.beginPath();cx.arc(tx,ty,7,0,Math.PI*2);
+  cx.fillStyle='rgba(0,255,170,.15)';cx.fill();
+  cx.strokeStyle='#00ffaa';cx.lineWidth=2;cx.stroke();
+  cx.font='bold 6px "Share Tech Mono"';cx.fillStyle='#00ffaa';cx.textAlign='center';
+  cx.fillText('NODE',tx,ty+15);
+  p3DrawBase(cx,bx,by);
+  p3DrawStar(cx,bx,by,t);
+  const inf=document.getElementById('ti0');
+  if(inf) inf.innerHTML='<span class="tck">Рішень: <span class="tcv" style="color:var(--c1)">∞</span></span><span class="tck">Зона: <span class="tcv">360°</span></span><span class="tck" style="width:100%;font-size:.48rem;color:var(--gray)">1 база: лише відстань d відома. Вузол може бути будь-де на колі радіуса d.</span>';
+}
+
+function p3DrawTopoB(cx,w,h,t){
+  const a1x=w*.28,a1y=h*.67,a2x=w*.76,a2y=h*.37;
+  const r1=Math.min(w,h)*.36,r2=Math.min(w,h)*.30;
+  cx.setLineDash([5,4]);cx.beginPath();cx.arc(a1x,a1y,r1,0,Math.PI*2);
+  cx.strokeStyle='rgba(0,180,255,.4)';cx.lineWidth=1.5;cx.stroke();cx.setLineDash([]);
+  cx.setLineDash([5,4]);cx.beginPath();cx.arc(a2x,a2y,r2,0,Math.PI*2);
+  cx.strokeStyle='rgba(0,255,170,.4)';cx.lineWidth=1.5;cx.stroke();cx.setLineDash([]);
+  const pts=circleIntersect(a1x,a1y,r1,a2x,a2y,r2);
+  if(pts){
+    const blink=Math.floor(t/45)%2===0;
+    const aP=blink?pts[0]:pts[1],iP=blink?pts[1]:pts[0];
+    const pulse=Math.sin(t*.09)*.5+.5;
+    cx.beginPath();cx.arc(aP.x,aP.y,10+pulse*3,0,Math.PI*2);
+    cx.fillStyle=`rgba(255,150,0,${.1+pulse*.08})`;cx.fill();
+    cx.beginPath();cx.arc(aP.x,aP.y,7,0,Math.PI*2);
+    cx.fillStyle='rgba(255,150,0,.25)';cx.fill();
+    cx.strokeStyle='#ff9900';cx.lineWidth=2;cx.stroke();
+    cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#ff9900';cx.textAlign='center';
+    cx.fillText(blink?'P1?':'P2?',aP.x,aP.y+18);
+    cx.beginPath();cx.arc(iP.x,iP.y,7,0,Math.PI*2);
+    cx.fillStyle='rgba(255,150,0,.06)';cx.fill();
+    cx.strokeStyle='rgba(255,150,0,.25)';cx.lineWidth=1.5;cx.stroke();
+    cx.fillStyle='rgba(255,150,0,.35)';cx.font='bold 7px "Share Tech Mono"';cx.textAlign='center';
+    cx.fillText(blink?'P2?':'P1?',iP.x,iP.y+18);
+    const mx=(pts[0].x+pts[1].x)/2,my=(pts[0].y+pts[1].y)/2;
+    cx.font='bold 8px "Share Tech Mono"';cx.fillStyle='rgba(255,200,0,.65)';cx.textAlign='center';
+    cx.fillText('АБО',mx,my);
+  }
+  p3DrawBase(cx,a1x,a1y);
+  cx.beginPath();cx.arc(a2x,a2y,7,0,Math.PI*2);
+  cx.fillStyle='rgba(0,255,170,.15)';cx.fill();
+  cx.strokeStyle='#00ffaa';cx.lineWidth=2;cx.stroke();
+  cx.font='bold 7px "Share Tech Mono"';cx.fillStyle='#00ffaa';cx.textAlign='center';
+  cx.fillText('NODE 2',a2x,a2y+18);
+  p3DrawStar(cx,a1x,a1y,t);
+  const inf=document.getElementById('ti1');
+  if(inf) inf.innerHTML='<span class="tck">Рішень: <span class="tcv" style="color:#ff9900">2</span></span><span class="tck">P1 або P2</span><span class="tck" style="width:100%;font-size:.48rem;color:var(--gray)">2 кола перетинаються у 2 точках — невизначеність зліва/справа від бази.</span>';
+}
+
+function p3DrawTopoC(cx,w,h,t){
+  const a1x=w*.22,a1y=h*.77,a2x=w*.78,a2y=h*.77,a3x=w*.50,a3y=h*.13;
+  const fx=w*.50,fy=h*.53;
+  const r1=Math.sqrt((fx-a1x)**2+(fy-a1y)**2);
+  const r2=Math.sqrt((fx-a2x)**2+(fy-a2y)**2);
+  const r3=Math.sqrt((fx-a3x)**2+(fy-a3y)**2);
+  [[a1x,a1y,r1,'rgba(0,180,255,.28)'],[a2x,a2y,r2,'rgba(0,255,170,.28)'],[a3x,a3y,r3,'rgba(255,153,0,.28)']].forEach(([ax,ay,r,col])=>{
+    cx.setLineDash([4,4]);cx.beginPath();cx.arc(ax,ay,r,0,Math.PI*2);
+    cx.strokeStyle=col;cx.lineWidth=1;cx.stroke();cx.setLineDash([]);
+  });
+  [['rgba(0,180,255,.55)',a1x,a1y,'d1'],['rgba(0,255,170,.55)',a2x,a2y,'d2'],['rgba(255,153,0,.55)',a3x,a3y,'d3']].forEach(([col,ax,ay,dl])=>{
+    cx.beginPath();cx.moveTo(ax,ay);cx.lineTo(fx,fy);
+    cx.strokeStyle=col;cx.lineWidth=1;cx.stroke();
+    const dist=Math.sqrt((fx-ax)**2+(fy-ay)**2);
+    cx.font='6px "Share Tech Mono"';cx.fillStyle=col;cx.textAlign='center';
+    cx.fillText(dl+':'+dist.toFixed(0),(ax+fx)/2,(ay+fy)/2-4);
+  });
+  const ring=((t*2)%60)/60;
+  cx.beginPath();cx.arc(fx,fy,16*(1-ring),0,Math.PI*2);
+  cx.strokeStyle=`rgba(255,51,85,${ring*.85})`;cx.lineWidth=2;cx.stroke();
+  cx.beginPath();cx.arc(fx,fy,10,0,Math.PI*2);
+  cx.fillStyle='rgba(255,51,85,.12)';cx.fill();
+  cx.strokeStyle='rgba(255,51,85,.45)';cx.lineWidth=1;cx.stroke();
+  cx.beginPath();cx.arc(fx,fy,5,0,Math.PI*2);
+  cx.fillStyle='#ff3355';cx.fill();cx.strokeStyle='#fff';cx.lineWidth=1.5;cx.stroke();
+  const alpha=.55+Math.sin(t*.07)*.45;
+  cx.font='bold 7px "Share Tech Mono"';cx.fillStyle=`rgba(255,80,100,${alpha})`;cx.textAlign='center';
+  cx.fillText('✓ XY ПОЗИЦІЯ',fx,fy+21);
+  cx.font='6px "Share Tech Mono"';cx.fillStyle='rgba(255,180,180,.55)';
+  cx.fillText('±10см',fx,fy+29);
+  p3DrawBase(cx,a1x,a1y);
+  [[a2x,a2y,'NODE 2','#00ffaa'],[a3x,a3y,'NODE 3','#ff9900']].forEach(([ax,ay,lbl,col])=>{
+    cx.beginPath();cx.arc(ax,ay,7,0,Math.PI*2);
+    cx.fillStyle='rgba(100,255,150,.12)';cx.fill();
+    cx.strokeStyle=col;cx.lineWidth=2;cx.stroke();
+    cx.font='bold 7px "Share Tech Mono"';cx.fillStyle=col;cx.textAlign='center';
+    cx.fillText(lbl,ax,ay+18);
+  });
+  p3DrawStar(cx,a1x,a1y,t);
+  if(t%30===0){
+    starlinkPktCount++;starlinkLat=32+Math.floor(Math.random()*14);
+    const el=document.getElementById('slStat');
+    if(el) el.textContent='▲ TX: '+starlinkPktCount+' PKT · Latency: '+starlinkLat+'ms · XY='+fx.toFixed(0)+','+fy.toFixed(0)+' → HQ INTEL MAP';
+  }
+  const inf=document.getElementById('ti2');
+  if(inf) inf.innerHTML='<span class="tck">Рішень: <span class="tcv" style="color:#ff3355">1 (точне)</span></span><span class="tck">Точність: <span class="tcv">±10см</span></span><span class="tck">Starlink TX: <span class="tcv" style="color:var(--c2)">'+starlinkPktCount+' pkt</span></span><span class="tck" style="width:100%;font-size:.48rem;color:var(--gray)">3 кола сходяться в 1 точці — трилатерація LSQ дає унікальну XY позицію.</span>';
+}
 
 function p3Init(){
-  TOPO_DEFS.forEach(tp=>{
-    const cvs=document.getElementById('ct'+tp.id);rsz(cvs);
-    const nodes=[];
-    for(let i=0;i<tp.w;i++){
-      const n=mkNode(i,false,cvs);
-      n.x=cvs.width*.3+rnd(-55,55);n.y=cvs.height*.42+rnd(-45,45)+i*75;
-      n.vx=rnd(-.18,.18);n.vy=rnd(-.18,.18);
-      nodes.push(n);
-    }
-    t3[tp.id]={nodes,time:0,raf:null,trigFl:0};
-    updateTopoInfo(tp.id);t3Anim(tp.id);
-  });t3Ready=true;
-}
-
-function t3Anim(id){
-  if(t3[id]&&t3[id].raf) cancelAnimationFrame(t3[id].raf);
-  const loop=()=>{t3SimUp(id);t3Draw(id);t3[id].raf=requestAnimationFrame(loop);};loop();
-}
-
-function t3SimUp(id){
-  const sim=t3[id];if(!sim) return;
-  const cvs=document.getElementById('ct'+id);sim.time++;
-  sim.nodes.forEach(n=>{
-    n.x+=n.vx;n.y+=n.vy;
-    if(n.x<55||n.x>cvs.width-55) n.vx*=-1;
-    if(n.y<55||n.y>cvs.height-75) n.vy*=-1;
-    n.kr+=(n.kt-n.kr)*.004;n.burst=Math.max(0,n.burst-1.5);n.healFl=Math.max(0,n.healFl-1.2);
-    if(n.state==='critical') n.spo2=Math.max(65,n.spo2-.014);
-    n.txT+=16;if(n.txT>=240){n.txT=0;n.freq=FREQ_BANDS[Math.floor(Math.random()*FREQ_BANDS.length)];}
-    if(sim.time%440===0&&n.state==='active'){n.spo2-=rnd(2,9);if(n.spo2<88){n.state='critical';n.burst=80;}}
+  [0,1,2].forEach(idx=>{
+    const cvs=document.getElementById('ct'+idx);rsz(cvs);
+    if(t3Rafs[idx]) cancelAnimationFrame(t3Rafs[idx]);
+    const fns=[p3DrawTopoA,p3DrawTopoB,p3DrawTopoC];
+    let lt=0;
+    const loop=()=>{
+      lt++;
+      const c=cvs.getContext('2d');c.clearRect(0,0,cvs.width,cvs.height);
+      c.fillStyle='#020912';c.fillRect(0,0,cvs.width,cvs.height);
+      drawGrid(c,cvs.width,cvs.height,'#07101c',48);
+      fns[idx](c,cvs.width,cvs.height,lt);
+      t3Rafs[idx]=requestAnimationFrame(loop);
+    };loop();
   });
-  sim.trigFl=Math.max(0,sim.trigFl-1.5);updateTopoInfo(id);
 }
 
-function t3Draw(id){
-  const tp=TOPO_DEFS[id],cvs=document.getElementById('ct'+id);rsz(cvs);
-  const cx=cvs.getContext('2d'),sim=t3[id];if(!sim) return;
-  cx.clearRect(0,0,cvs.width,cvs.height);cx.fillStyle='#020912';cx.fillRect(0,0,cvs.width,cvs.height);
-  drawGrid(cx,cvs.width,cvs.height,'#07101c',48);
-  const ex=cvs.width*.85,ey=cvs.height*.5;
-  sim.nodes.filter(n=>n.state!=='offline').forEach(n=>{
-    const rd=d2(n,{x:ex,y:ey})*PX_M,rms=rttMs(rd);
-    cx.beginPath();cx.moveTo(n.x,n.y);cx.lineTo(ex,ey);
-    cx.strokeStyle=n.state==='critical'?'rgba(255,51,85,.35)':'rgba(0,180,255,.3)';cx.lineWidth=1;cx.stroke();
-    cx.font='7px "Share Tech Mono"';cx.fillStyle='rgba(60,100,150,.65)';
-    cx.fillText(`${rms.toFixed(4)}ms`,(n.x+ex)/2+2,(n.y+ey)/2-3);
-    cx.fillStyle='rgba(255,215,0,.5)';
-    cx.fillText(`${rd.toFixed(1)}м`,(n.x+ex)/2+2,(n.y+ey)/2+6);
-  });
-  drawLinks(cx,sim.nodes,.2);
-  // Tri dots removed - only show label text if full trilateration active
-  sim.nodes.forEach(n=>drawNode(cx,n,.2));
-  drawEdge(cx,ex,ey);
-  if(sim.trigFl>0){cx.beginPath();cx.arc(ex,ey,sim.trigFl*2,0,Math.PI*2);cx.strokeStyle=`rgba(255,215,0,${sim.trigFl/80*.55})`;cx.lineWidth=2;cx.stroke();}
+function p3Reset(){
+  [0,1,2].forEach(idx=>{if(t3Rafs[idx]) cancelAnimationFrame(t3Rafs[idx]);});
+  starlinkPktCount=0;
+  const el=document.getElementById('slStat');
+  if(el) el.textContent='▲ TX: 0 PKT · Latency: — ms · Інтерактивна карта штабу';
+  p3Init();
 }
-
-function updateTopoInfo(id){
-  const sim=t3[id];if(!sim) return;
-  const alive=sim.nodes.filter(n=>n.state!=='offline'),cr=sim.nodes.filter(n=>n.state==='critical').length;
-  const cvs=document.getElementById('ct'+id),ex=cvs.width*.85,ey=cvs.height*.5;
-  const avgRTT=alive.length?rttMs(d2(alive[0],{x:ex,y:ey})*PX_M):0;
-  const avgDist=alive.length?d2(alive[0],{x:ex,y:ey})*PX_M:0;
-  const td=TOPO_DEFS[id];
-  document.getElementById('ti'+id).innerHTML=`
-    <span class="tck">Вузлів: <span class="tcv">${alive.length}/${sim.nodes.length}</span></span>
-    <span class="tck">Критичних: <span class="tcv" style="color:var(--c3)">${cr}</span></span>
-    <span class="tck">RTT: <span class="tcv">${avgRTT.toFixed(4)}ms</span></span>
-    <span class="tck">Дист.: <span class="tcv" style="color:var(--c6)">${avgDist.toFixed(1)}м</span></span>
-    <span class="tck" style="width:100%;margin-top:3px;font-size:.5rem">${td.desc}</span>`;
-}
-
-function p3Trigger(){TOPO_DEFS.forEach(tp=>{const sim=t3[tp.id];if(!sim) return;const ac=sim.nodes.filter(n=>n.state==='active');if(ac.length){const n=ac[Math.floor(Math.random()*ac.length)];n.state='critical';n.spo2=rnd(64,80);n.hr=rnd(138,205);n.burst=90;sim.trigFl=80;}});}
-function p3HealAll(){TOPO_DEFS.forEach(tp=>{const sim=t3[tp.id];if(!sim) return;sim.nodes.forEach(n=>{if(n.state!=='active'){n.state='active';n.spo2=rnd(93,100);n.hr=rnd(62,82);n.priority=0;n.healFl=80;}});});}
-function p3Reset(){TOPO_DEFS.forEach(tp=>{if(t3[tp.id]&&t3[tp.id].raf) cancelAnimationFrame(t3[tp.id].raf);});p3Init();}
+function p3Trigger(){p3Reset();}
+function p3HealAll(){p3Reset();}
 
 // ═══════════════════════════════════════════════════════════════
 //  TAB 4 — COMMUNICATION
@@ -1798,7 +1906,7 @@ function drawNormFlow(){
     cx.fillText(n.sub,n.x,n.y+11);cx.textAlign='left';
   });
   cx.font='9px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
-  cx.fillText('НОРМАЛЬНИЙ РЕЖИМ · 500мс HEARTBEAT · AES-128 · FREQ-HOP 3.1-4.9ГГц',12,h-8);
+  cx.fillText('НОРМАЛЬНИЙ РЕЖИМ · 500мс HEARTBEAT · AES-128 · UWB CH5 6489.6МГц · 499МГц BW · XY',12,h-8);
 }
 
 // ── Critical flow diagram ──
@@ -1988,7 +2096,7 @@ function drawRadar(){
   cx.font='bold 7px "Orbitron"';cx.fillStyle='#00b4ff';cx.textAlign='center';cx.fillText('BASE',cx0,cy0+3);cx.textAlign='left';
   // Labels
   cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.7)';
-  cx.textAlign='center';cx.fillText('UWB ToF ПОЗИЦІОНУВАННЯ · ВІДНОСНІ КООРДИНАТИ · GPS DENIED',pw/2,ph-8);cx.textAlign='left';
+  cx.textAlign='center';cx.fillText('UWB650Pro CH5 · 2D XY ПОЗИЦІОНУВАННЯ · ВІДНОСНІ КООРДИНАТИ · GPS DENIED',pw/2,ph-8);cx.textAlign='left';
 }
 
 function updateCommSidebar(){
@@ -2081,9 +2189,9 @@ function buildP5(){
     {t:'НОСИМИЙ ВУЗОЛ',c:'#00b4ff',r:[
       ['MCU','ESP32-WROOM-32','Мікроконтролер — мозок браслету. Обробляє всі дані, керує радіо та сенсорами'],
       ['RAM/Flash','520KB / 4MB','Оперативна/постійна пам\'ять. 4MB вистачає для прошивки, логів та кешу'],
-      ['UWB модуль','DWM3000 / DW1000','Чіп надширокосмугового радіо. Він як ліхтарик що "освітлює" простір сигналами'],
-      ['UWB точність','±5–10 см (LOS)','Точність вимірювання відстані при прямій видимості. Краще за GPS у 10-20 разів'],
-      ['UWB дальність','До 200 м','Максимальна дальність зв\'язку між браслетами'],
+      ['UWB модуль','NiceRF UWB650Pro','DW3000 + зовнішній підсилювач потужності (PA) 500мВт. Значно більша дальність ніж стандартний DW3000'],
+      ['UWB точність','±10 см (LOS)','Точність вимірювання відстані при прямій видимості. Краще за GPS у 10–20 разів'],
+      ['UWB дальність','До 1000+ м LoS','Завдяки підсилювачу 500мВт реальна дальність перевищує 1 км при прямій видимості'],
       ['Sensor','MAX30102 SpO₂+ЧСС','Оптичний сенсор: вимірює насичення крові киснем і пульс через шкіру пальця'],
       ['АКБ','LiPo 2000 мАг','Літієвий акумулятор. Як у смартфоні, але оптимізований для малого споживання'],
       ['Автономія','48–72 год','Час роботи без зарядки. Завдяки режиму глибокого сну 94% часу'],
@@ -2104,15 +2212,15 @@ function buildP5(){
     ]},
     {t:'RF & ЗАХИСТ СИГНАЛУ',c:'#ff9900',r:[
       ['Стандарт','IEEE 802.15.4z (UWB)','Міжнародний стандарт надширокосмугового зв\'язку. Той самий що в iPhone для AirDrop та ключів'],
-      ['Діапазон','3.1–4.9 ГГц (hopping)','Сигнал стрибає між частотами — ворогу важко заглушити чи прослухати'],
+      ['Модуль','NiceRF UWB650Pro','DW3000 + підсилювач (PA) + LNA + антенна узгоджуюча схема для CH5'],
+      ['Канал','UWB CH5 · 6489.6 МГц','Фіксований канал 5. Смуга 499.2 МГц — надто широка для звичайного вузькосмугового джемера'],
+      ['TX потужність','+27 dBm (500 мВт)','Підсилений модуль: 500мВт проти ~1мВт стандартного DW3000. Дальність >1км LoS'],
       ['Шифрування','AES-128 CBC','Кожен пакет зашифрований 128-бітним ключем. Злому — тисячі років обчислень'],
       ['Handshake','ECDH + HMAC-SHA256','Браслети "вітаються" безпечно: обмінюються ключами без їхньої передачі відкрито'],
       ['Session keys','Per-burst rotating','Ключ шифрування змінюється з кожним сеансом — навіть перехоплений ключ марний'],
-      ['LPD метод','Burst + spread-spectrum','Короткі спалахи сигналу + розширення спектру = мінімальна видимість для ворога'],
-      ['TX потужність','-41.3 dBm/MHz','Дуже слабкий сигнал — за порогом виявлення звичайними засобами РЕБ'],
-      ['Hopping step','±300 МГц/TX','Щокожна передача — нова частота. Класичний джемер не встигає'],
+      ['LPD метод','Time-Hopping + SS','UWB-імпульси в pseudorandom моменти у 499МГц смузі — мінімальна видимість для РЕБ'],
+      ['Обробний виграш','~21 дБ (499 МГц BW)','Широка смуга = висока завадостійкість без традиційного FHSS між діапазонами'],
       ['Anti-replay','Timestamp + nonce','Кожен пакет унікальний: перехоплений і повторно надісланий — відкинеться'],
-      ['Overhead','<15% channel use','Лише 15% часу ефіру зайнято — ефективно, без перевантаження'],
     ]},
     {t:'MESH АЛГОРИТМ (МЕРЕЖА)',c:'#c844ff',r:[
       ['Тип','Ad-hoc peer-to-peer','Кожен з кожним, без сервера. Зникає один — решта продовжує'],
@@ -2127,16 +2235,16 @@ function buildP5(){
       ['Latency','<5 мс one-hop','Затримка менше 5 мілісекунд на один перехід — реальний час'],
     ]},
     {t:'ЛОКАЛІЗАЦІЯ (МІСЦЕЗНАХОДЖЕННЯ)',c:'#ffd700',r:[
-      ['Метод','ToF Trilateration','Час польоту сигналу → відстань → положення. Як GPS, але через свої браслети'],
-      ['Алгоритм','Least Squares (LSQ)','Математика що знаходить точку перетину кіл відстаней від трьох точок'],
-      ['Фільтр','Extended Kalman (EKF)','Математичний фільтр, що згладжує помилки вимірювань і передбачає рух'],
-      ['Мін. якорів','≥3 вузли','Щоб визначити точку в 2D — потрібно мінімум 3 відомі опорні точки'],
-      ['Точність','0.5–1.5 м (3 якоря)','З трьома браслетами точність кращe, ніж більшість GPS'],
-      ['Оновлення','1–10 Гц','Від 1 до 10 оновлень позиції в секунду'],
+      ['Вимір','2D XY (тільки горизонталь)','Система надає відносні XY координати на тактичній площині. Z-координата (висота) не вимірюється'],
+      ['Метод','ToF Trilateration 2D','Час польоту сигналу → відстань → XY положення. Як GPS, але через свої браслети на площині'],
+      ['Алгоритм','Least Squares (LSQ)','Математика що знаходить точку перетину кіл відстаней від трьох точок на площині'],
+      ['Фільтр','EKF · стан: [x,y,vx,vy]','Extended Kalman Filter: 4D стан (позиція XY + швидкість XY). Без Z — тільки 2D тактична площина'],
+      ['Мін. якорів','≥3 вузли (2D)','Для визначення XY точки в 2D потрібно мінімум 3 відомі опорні точки'],
+      ['Точність','0.5–1.5 м (3 якоря)','З трьома UWB650Pro браслетами точність краща ніж більшість GPS'],
+      ['Оновлення','1–10 Гц','Від 1 до 10 оновлень XY позиції в секунду'],
       ['ToF шум','±0.1–0.5 м','Похибка вимірювання відстані через відбиття, тіло бійця, перешкоди'],
-      ['Конвергенція','<30 с','Час до отримання першої надійної позиції після увімкнення'],
       ['GPS','Не потрібний','Працює в підвалах, тунелях, в умовах глушіння — там де GPS мовчить'],
-      ['Вимір','distance=(RTT×c)/2','Формула: відстань = (час туди-назад × швидкість світла) / 2'],
+      ['Вимір','dist=(RTT×c)/2 → XY','Формула: відстань = (час туди-назад × швидкість світла) / 2, далі трилатерація в XY'],
     ]},
     {t:'ЕНЕРГОСПОЖИВАННЯ',c:'#ff6688',r:[
       ['Deep sleep','~15 мкА','Режим глибокого сну: споживання мікроамперне — менше, ніж підтримка часу'],
@@ -2167,17 +2275,17 @@ function buildP5(){
       code:'RTT_ns = (T4 - T1) - (T3 - T2)          # подвійне двостороннє вимірювання\ndist_m = (RTT_ns * 299_792_458) / 2e9   # відстань у метрах\ndist_measured = dist_m + gauss(0, noise) # + похибка середовища'
     },
     {
-      t:'ЯК ВИЗНАЧАЄТЬСЯ МІСЦЕ (ТРИЛАТЕРАЦІЯ)',
-      simple:'Уяви три браслети на відомих позиціях. Кожен каже: "Ти від мене на Xм". Навколо кожного малюємо коло радіусом X. Місце де три кола перетинаються — і є точка де знаходиться боєць. Як в грі "гаряче-холодно" від трьох людей одночасно.',
+      t:'ЯК ВИЗНАЧАЄТЬСЯ МІСЦЕ (2D ТРИЛАТЕРАЦІЯ)',
+      simple:'Уяви три браслети на відомих XY позиціях тактичної площини. Кожен каже: "Ти від мене на Xм". Навколо кожного малюємо коло. Місце де три кола перетинаються — і є XY точка де знаходиться боєць. Тільки горизонтальна площина (без висоти Z).',
       steps:[
-        {n:'1',t:'Потрібно ≥3 браслети-якоря з відомими відносними координатами',tip:'Якорі не мусять знати GPS-координати. Достатньо знати відстань між ними (виміряту ToF)'},
-        {n:'2',t:'Кожен якір повідомляє відстань до невідомої точки: (x−xᵢ)²+(y−yᵢ)²=dᵢ²',tip:'Це рівняння кола. Якір знаходиться в центрі кола радіусом dᵢ'},
-        {n:'3',t:'Три рівняння кіл лінеаризуються (віднімання: коло-коло = лінія)',tip:'Різниця двох рівнянь квадратів дає лінійне рівняння. 3 кола → 2 лінії → 1 точка'},
-        {n:'4',t:'Система Ax=b розв\'язується методом найменших квадратів (LSQ)',tip:'LSQ мінімізує суму квадратів похибок — оптимальне рішення навіть при шумі вимірювань'},
-        {n:'5',t:'Kalman-фільтр згладжує відповіді: [x,y,vx,vy] → предиктор позиції',tip:'EKF прогнозує де буде боєць у наступний момент і коригує на нове вимірювання'},
-        {n:'6',t:'Радіус кола невизначеності залежить від кількості якорів і точності ToF',tip:'3 якоря → ~1м точність. 4+ якоря → <0.5м. Геометрія розташування теж важлива (GDOP)'},
+        {n:'1',t:'Потрібно ≥3 браслети-якоря з відомими відносними XY координатами',tip:'Якорі не мусять знати GPS-координати. Достатньо знати відстань між ними (виміряту UWB650Pro ToF)'},
+        {n:'2',t:'Кожен якір повідомляє XY відстань: (x−xᵢ)²+(y−yᵢ)²=dᵢ² (2D, без Z)',tip:'Рівняння кола на тактичній площині. Висота не вимірюється — бійці рухаються в 2D просторі'},
+        {n:'3',t:'Три рівняння кіл лінеаризуються (коло−коло = пряма лінія)',tip:'Різниця двох рівнянь дає лінійне рівняння. 3 кола → 2 лінії → 1 XY точка на площині'},
+        {n:'4',t:'Система Ax=b (2×2) розв\'язується методом найменших квадратів (LSQ)',tip:'LSQ мінімізує суму квадратів похибок — оптимальне рішення XY навіть при шумі вимірювань'},
+        {n:'5',t:'EKF згладжує: стан [x,y,vx,vy] — тільки 2D, без Z-компоненти',tip:'4D стан вектор: XY позиція та XY швидкість. Altitude/Z не відстежується'},
+        {n:'6',t:'Точність XY залежить від кількості якорів і точності UWB650Pro ToF',tip:'3 якоря → ~1м точність XY. 4+ → <0.5м. Геометрія GDOP важлива'},
       ],
-      code:'# Трилатерація: 3 кола → 1 точка\nA = 2*np.array([[xi-xn, yi-yn] for xi,yi in anchors[:-1]])\nb = np.array([dn²-di²+xi²-xn²+yi²-yn² for ...])\npos_xy = np.linalg.lstsq(A, b, rcond=None)[0]\n# Kalman: x_new = x + K*(вимір - прогноз)'
+      code:'# 2D Трилатерація: 3 кола → 1 точка на XY площині (Z не використовується)\nA = 2*np.array([[xi-xn, yi-yn] for xi,yi in anchors_xy[:-1]])\nb = np.array([dn²-di²+xi²-xn²+yi²-yn² for ...])\npos_xy = np.linalg.lstsq(A, b, rcond=None)[0]  # → [x, y] only\n# EKF state: [x, y, vx, vy] — no Z component\nx_new = x + K*(measurement_xy - H @ x_pred)'
     },
     {
       t:'ЯК МЕРЕЖА САМОВІДНОВЛЮЄТЬСЯ',
@@ -2200,10 +2308,10 @@ function buildP5(){
         {n:'2',t:'P5 (CRITICAL): обходить всі черги, відправляється миттєво (burst mode)',tip:'Burst: 3-5 однакових пакетів підряд на різних частотах. Хоча б один точно дійде'},
         {n:'3',t:'Шифрування AES-128: payload → IV+ключ → ciphertext (нечитабельні дані)',tip:'AES-128 CBC: блоковий шифр з ланцюжком блоків. Навіть знаючи частину — не розшифрувати ціле'},
         {n:'4',t:'HMAC-SHA256 підписує зашифрований пакет: будь-яка зміна → відкидати',tip:'HMAC = Hash-based MAC. SHA-256 дає 256-бітний хеш — підробити практично неможливо'},
-        {n:'5',t:'Частотний стрибок: кожна TX відбувається на новій частоті з 3.1-4.9ГГц',tip:'7 частотних каналів, вибір pseudorandom з seed=session_key. Jamming однієї частоти не допомагає'},
+        {n:'5',t:'Time-Hopping UWB: кожен імпульс відправляється у pseudorandom момент у 499МГц смузі CH5',tip:'UWB650Pro не перемикається між GHz-діапазонами. Захист від джемінгу — надширока 499МГц смуга та Time-Hopping всередині неї'},
         {n:'6',t:'Anti-replay: timestamp+nonce в кожному пакеті. Повторений пакет відкидається',tip:'Nonce = Number Once (число, що використовується раз). Запобігає атакам повтором перехоплених пакетів'},
       ],
-      code:'# Повний цикл передачі\niv = os.urandom(16)                     # випадковий вектор ініціалізації\ncipher = AES128_CBC(session_key, iv)    # шифр\nciphertext = cipher.encrypt(payload)    # зашифровані дані\nmac = HMAC_SHA256(session_key, iv+ct)   # підпис\npkt = dict(priority=5, iv=iv, ct=ciphertext, mac=mac, ts=timestamp, nonce=nonce)\nfor freq in random_sample(FREQ_BANDS, BURST_N):\n    radio.tx(pkt, freq)                 # стрибок по частотах'
+      code:'# Повний цикл передачі — UWB650Pro CH5\niv = os.urandom(16)                     # випадковий вектор ініціалізації\ncipher = AES128_CBC(session_key, iv)    # шифр\nciphertext = cipher.encrypt(payload)    # зашифровані дані\nmac = HMAC_SHA256(session_key, iv+ct)   # підпис\npkt = dict(priority=5, iv=iv, ct=ciphertext, mac=mac, ts=timestamp, nonce=nonce)\n# CH5: 6489.6 МГц, BW=499.2 МГц — Time-Hopping burst (не FHSS між GHz-діапазонами)\nfor slot in time_hop_sequence(session_key, BURST_N):  # pseudorandom TH-slots\n    radio.tx(pkt, ch=5, th_slot=slot)   # burst у різні часові слоти'
     },
   ];
 
@@ -2260,26 +2368,6 @@ function buildP5(){
       </div>
       <div class="alg-code">${a.code}</div>
     </div>`).join('');
-}
-
-// ═══ TOPOLOGIES ═══
-function p3Init(){
-  TOPO_DEFS.forEach(tp=>{
-    const cvs=document.getElementById('ct'+tp.id);rsz(cvs);
-    const nodes=[];
-    for(let i=0;i<tp.w;i++){
-      const n=mkNode(i,false,cvs);
-      n.x=cvs.width*.3+rnd(-55,55);n.y=cvs.height*.42+rnd(-45,45)+i*75;
-      n.vx=rnd(-.18,.18);n.vy=rnd(-.18,.18);nodes.push(n);
-    }
-    t3[tp.id]={nodes,time:0,raf:null,trigFl:0};
-    updateTopoInfo(tp.id);t3Anim(tp.id);
-  });t3Ready=true;
-}
-
-function t3Anim(id){
-  if(t3[id]&&t3[id].raf) cancelAnimationFrame(t3[id].raf);
-  const loop=()=>{t3SimUp(id);t3Draw(id);t3[id].raf=requestAnimationFrame(loop);};loop();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2409,7 +2497,7 @@ function drawScCanvas(){
   // labels
   cx.font='8px "Share Tech Mono"';cx.fillStyle='rgba(37,58,86,.8)';
   cx.textAlign='center';
-  cx.fillText('🔴 = ПОРАНЕНИЙ · 🟢 = НОРМА · ⚓ = ЯКІР-БРАСЛЕТ',pw/2,ph-10);
+  cx.fillText('🔴 = ПОРАНЕНИЙ · 🟢 = НОРМА · ⚓ = ЯКІР · UWB650Pro CH5 · 2D XY',pw/2,ph-10);
   cx.textAlign='left';
 }
 const notifQ=[];
